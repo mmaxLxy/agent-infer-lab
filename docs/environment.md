@@ -2,26 +2,30 @@
 
 - 核验日期：2026-07-16（Asia/Shanghai）
 - 项目目录（Windows）：`D:\agent-infer-lab`
-- 目标运行环境：WSL2 / Ubuntu
-- 核验方式：仅执行只读命令；本次未安装、升级或卸载任何软件
+- 目标运行环境：WSL2 / Ubuntu 24.04.3 LTS
+- 最终状态：**通过**
 
 ## 1. 验收结论
 
-| 验收项 | 状态 | 结论 |
+| 验收项 | 状态 | 核验结果 |
 |---|---:|---|
-| Linux / WSL2 | 通过 | 默认发行版为 Ubuntu 24.04.3 LTS，运行在 WSL2 |
-| NVIDIA GPU 与显存 | 通过 | NVIDIA GeForce RTX 4060，8188 MiB，Compute Capability 8.9 |
-| GPU 驱动与 WSL GPU 透传 | 通过 | Windows 驱动 581.57；WSL 可通过 `/usr/lib/wsl/lib/nvidia-smi` 访问 GPU |
-| CUDA Toolkit | 部分通过 | Windows 已安装 CUDA Toolkit 12.9；WSL 未安装 Linux CUDA Toolkit |
-| WSL `nvcc` | **未通过** | WSL 中找不到 Linux `nvcc` |
-| WSL Python | 通过 | Python 3.12.3，路径 `/usr/bin/python3` |
-| WSL PyTorch CUDA | **未通过** | WSL 未安装 `pip` 与 `torch`，暂时无法得到 `torch.cuda.is_available() == True` |
-| Nsight Systems | 部分通过 | Windows 已安装 2025.6.1；WSL 中无 `nsys` |
-| Nsight Compute | 部分通过 | Windows 已安装 2025.2.0；WSL 中无 `ncu` |
+| Linux / WSL2 | 通过 | WSL 2.7.10.0；Ubuntu 24.04.3 LTS；Linux 6.18.33.2 |
+| WSL 存储位置 | 通过 | Ubuntu `BasePath` 为 `D:\WSL\Ubuntu`，默认用户 UID 1000；C 盘旧 VHD 不存在 |
+| NVIDIA GPU | 通过 | NVIDIA GeForce RTX 4060，8188 MiB，Compute Capability 8.9 |
+| 驱动与 GPU 透传 | 通过 | Windows 驱动 581.57；WSL 可访问 GPU |
+| Linux CUDA Toolkit | 通过 | CUDA Toolkit 12.9.2；`nvcc` V12.9.86 |
+| Python 虚拟环境 | 通过 | Python 3.12.3；`/home/ayax/.venvs/agent-infer-lab` |
+| PyTorch CUDA | 通过 | PyTorch 2.11.0+cu129；`torch.cuda.is_available()` 为 `True` |
+| GPU 实算 | 通过 | RTX 4060 上计算平方张量，结果为 `[1.0, 4.0, 9.0, 16.0, 25.0]` |
+| vLLM | 通过 | vLLM 0.23.0+cu129；CLI 和 Python 导入均成功 |
+| Python 依赖 | 通过 | `pip check` 输出 `No broken requirements found.` |
+| Nsight Systems | 通过 | Linux CLI 2025.1.3 |
+| Nsight Compute | 通过 | Linux CLI 2025.2.1 |
+| Debian 软件包 | 通过 | `dpkg --audit` 无异常输出 |
 
-**当前阶段未达到完成条件。** GPU 与 WSL2 基础能力正常，但 Linux CUDA 编译工具链、WSL Python 环境和 Linux Nsight CLI 尚未安装。
+## 2. 版本与路径
 
-## 2. Windows 宿主机
+### Windows 宿主机
 
 | 项目 | 核验值 |
 |---|---|
@@ -31,93 +35,95 @@
 | 显存 | 8188 MiB |
 | Compute Capability | 8.9 |
 | NVIDIA 驱动 | 581.57 |
-| `nvidia-smi` 显示的 CUDA Version | 13.0 |
+| `nvidia-smi` 显示的 CUDA Version | 13.0（驱动可支持的最高运行时，不等于已安装 Toolkit） |
 | Windows CUDA Toolkit | 12.9，`nvcc` V12.9.41 |
 | Windows `nvcc` | `D:\CUDA12.9\bin\nvcc.exe` |
-| Windows Python | 3.13.11，`C:\Users\BayMax\AppData\Local\Programs\Python\Python313\python.exe` |
 | Nsight Systems | 2025.6.1 |
 | Nsight Compute | 2025.2.0 |
 
-注意：`nvidia-smi` 中的 CUDA 13.0 表示驱动能够支持的最高 CUDA 运行时版本，不代表 WSL 已安装 CUDA Toolkit 13.0。实际发现的 Windows Toolkit 为 12.9。
-
-## 3. WSL2 / Linux
+### WSL2 / Linux
 
 | 项目 | 核验值 |
 |---|---|
 | WSL | 2.7.10.0 |
-| 默认发行版 | Ubuntu，WSL Version 2 |
-| Linux 内核 | 6.18.33.2-microsoft-standard-WSL2 |
 | Ubuntu | 24.04.3 LTS (Noble Numbat) |
+| Linux 内核 | 6.18.33.2-microsoft-standard-WSL2 |
 | Linux 用户 | `ayax` |
-| Home | `/home/ayax` |
-| GPU 访问 | 通过 `/usr/lib/wsl/lib/nvidia-smi` 成功 |
-| GPU | NVIDIA GeForce RTX 4060，8188 MiB |
-| 驱动 | 581.57 |
-| Python | 3.12.3，`/usr/bin/python3` |
-| `pip` | 未安装 |
-| PyTorch | 未安装 |
-| Linux CUDA Toolkit | 未安装；未发现 `/usr/local/cuda*` 或 `/opt/cuda*` |
-| Linux `nvcc` | 不可用 |
-| Linux `nsys` | 不可用 |
-| Linux `ncu` | 不可用 |
+| Ubuntu VHD | `D:\WSL\Ubuntu\ext4.vhdx`，约 39.23 GiB |
+| CUDA Toolkit | 12.9.2，`/usr/local/cuda-12.9` |
+| `nvcc` | 12.9.86，`/usr/local/bin/nvcc` |
+| `nsys` | 2025.1.3，`/usr/local/bin/nsys` |
+| `ncu` | 2025.2.1，`/usr/local/bin/ncu` |
+| Python | 3.12.3 |
+| Python 虚拟环境 | `/home/ayax/.venvs/agent-infer-lab`，约 14 GiB |
+| PyTorch | 2.11.0+cu129 |
+| PyTorch CUDA | 12.9 |
+| vLLM | 0.23.0+cu129 |
+| vLLM 官方 wheel 缓存 | `D:\AIInfra\cache\vllm-0.23.0+cu129-cp38-abi3-manylinux_2_28_x86_64.whl` |
+| wheel SHA256 | `8bc2203995d061e6b988916b71b9dee8a5970f5fdc5f37d4445a877a2fab2cc1` |
+| pip 缓存 | `/home/ayax/.cache/pip`，约 6.2 GiB |
 
-Windows 的 `nvcc.exe` 即使可以从 WSL 路径访问，生成的也是 Windows 目标程序，不能替代项目所需的 Linux `nvcc`。
+所有 Linux 环境数据都位于 Ubuntu 的 D 盘 VHD 中；项目源码位于 `D:\agent-infer-lab`，在 WSL 中对应 `/mnt/d/agent-infer-lab`。
 
-## 4. 关键核验命令
-
-```powershell
-wsl.exe --version
-wsl.exe --status
-wsl.exe --list --verbose
-nvidia-smi.exe --query-gpu=name,memory.total,driver_version,compute_cap --format=csv,noheader
-nvcc.exe --version
-nsys.exe --version
-```
-
-```bash
-uname -srmo
-cat /etc/os-release
-/usr/lib/wsl/lib/nvidia-smi --query-gpu=name,memory.total,driver_version,compute_cap --format=csv,noheader
-nvcc --version
-python3 --version
-python3 -c 'import torch; print(torch.__version__); print(torch.version.cuda); print(torch.cuda.is_available())'
-nsys --version
-ncu --version
-```
-
-## 5. 待安装项与路径决策
-
-在继续前需要确认安装路径。本报告不预先锁定具体软件版本；版本应在安装前根据 vLLM、PyTorch 与 NVIDIA 官方兼容矩阵统一选择。
-
-### 方案 A：WSL 系统 CUDA + 独立 Python 虚拟环境（推荐）
-
-- Linux CUDA Toolkit：`/usr/local/cuda-<version>`，并用 `/usr/local/cuda` 软链接选择当前版本
-- Python 虚拟环境：`/home/ayax/.venvs/agent-infer-lab`
-- Nsight Linux CLI：使用 NVIDIA 的 WSL/Ubuntu 软件包安装到包管理器默认位置
-- 项目源码继续保留在 Windows：`/mnt/d/agent-infer-lab`
-
-优点是 CUDA 工具链位置标准、文档和构建脚本兼容性最好，Python 依赖不会污染系统 Python。缺点是需要 `sudo`，且 `/mnt/d` 上进行大量小文件编译通常慢于 WSL ext4。
-
-### 方案 B：Conda/Miniconda 集中管理
-
-- Conda 根目录：`/home/ayax/miniconda3`
-- 项目环境：`/home/ayax/miniconda3/envs/agent-infer-lab`
-- Nsight 仍建议使用 NVIDIA 系统软件包
-
-优点是 Python、PyTorch 和部分 CUDA 开发包隔离清晰；缺点是 CUDA 编译工具链来源更复杂，排查 vLLM/CUDA Extension 链接问题时变量更多。
-
-## 6. 下一次验收条件
-
-安装完成后必须同时满足：
+## 3. 关键验收证据
 
 ```text
-WSL2 Ubuntu 可启动
-/usr/lib/wsl/lib/nvidia-smi 能识别 RTX 4060
-nvcc --version 成功
-python -c "import torch; print(torch.cuda.is_available())" 输出 True
-python -c "import torch; print(torch.version.cuda)" 输出已选 CUDA 版本
-nsys --version 成功
-ncu --version 成功
+$ nvcc --version
+Cuda compilation tools, release 12.9, V12.9.86
+
+$ nsys --version
+NVIDIA Nsight Systems version 2025.1.3...
+
+$ ncu --version
+Version 2025.2.1.0
+
+$ python -m pip check
+No broken requirements found.
+
+$ vllm --version
+0.23.0+cu129
 ```
 
-所有命令的输出与最终安装路径应回填本报告，不能用 Windows 侧工具的存在替代 WSL 侧验收。
+GPU 实算的核心输出：
+
+```text
+torch=2.11.0+cu129
+torch_cuda=12.9
+cuda_available=True
+device=NVIDIA GeForce RTX 4060
+gpu_result=[1.0, 4.0, 9.0, 16.0, 25.0]
+vllm=0.23.0
+```
+
+## 4. 版本决策说明
+
+当前 vLLM 的 PyPI 默认 wheel 已切换到 CUDA 13，直接安装得到的 vLLM 0.25.1 依赖 `libcudart.so.13`，与本项目选定的 PyTorch/CUDA 12.9 栈不一致。最终改用 vLLM 官方 GitHub Release 的 `0.23.0+cu129` 精确 wheel，并核对 GitHub 资产大小与 SHA256 后安装。
+
+采用 CUDA 12.9 的原因：
+
+1. Windows 与 Linux 开发工具链统一为 CUDA 12.9。
+2. PyTorch 2.11.0+cu129 与 vLLM 0.23.0+cu129 的二进制版本一致。
+3. 避免同时维护 CUDA 12.9 与 13.0 两套系统 Toolkit，减少 ABI 和排错变量。
+
+参考：
+
+- [vLLM GPU 安装文档](https://docs.vllm.ai/en/latest/getting_started/installation/gpu/)
+- [vLLM v0.23.0 Release](https://github.com/vllm-project/vllm/releases/tag/v0.23.0)
+- [NVIDIA CUDA on WSL User Guide](https://docs.nvidia.com/cuda/wsl-user-guide/index.html)
+
+## 5. 使用方式
+
+```bash
+source /home/ayax/.venvs/agent-infer-lab/bin/activate
+cd /mnt/d/agent-infer-lab
+
+python --version
+nvcc --version
+vllm --version
+```
+
+## 6. 已知限制与下一阶段
+
+- vLLM 在 WSL 中提示 `pin_memory=False`，可能降低部分数据传输性能。后续基准测试必须保留该条件，不能把 WSL 结果直接等同于原生 Linux 服务器。
+- 当前只完成环境与 GPU 实算验收，尚未下载模型，也未完成端到端 vLLM 推理服务验收。
+- 下一阶段应先固化依赖清单和一键验收脚本，再选择适合 8 GiB 显存的小模型做最小推理闭环。
