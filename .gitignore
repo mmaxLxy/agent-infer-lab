@@ -1,0 +1,37 @@
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.so
+*.pyd
+
+# Models and experiment outputs
+models/
+artifacts/
+results/*
+!results/.gitkeep
+*.safetensors
+*.pth
+*.pt
+
+# Secrets
+.env
+.env.*
+!.env.example
+
+# Private documents and Word temporary files
+*.pdf
+*.docx
+~$*
+
+# Local workspace/editor metadata
+.agents/
+.vscode/
+.idea/
