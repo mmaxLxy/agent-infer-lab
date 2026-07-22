@@ -1,5 +1,6 @@
 """Deterministic request specifications for inference benchmarks."""
 
+import random
 from dataclasses import dataclass
 
 
@@ -42,3 +43,32 @@ class WorkloadConfig:
             raise ValueError("concurrency cannot exceed request_count")
         if not isinstance(self.seed, int) or isinstance(self.seed, bool):
             raise ValueError("seed must be an integer")
+
+
+@dataclass(frozen=True)
+class RequestSpec:
+    """One immutable request description for a later benchmark backend."""
+
+    request_id: str
+    input_tokens: int
+    output_tokens: int
+    shared_prefix_tokens: int
+
+
+def generate_workload(config: WorkloadConfig) -> tuple[RequestSpec, ...]:
+    """Generate deterministic requests without changing global random state."""
+
+    generator = random.Random(config.seed)
+    requests = []
+    for index in range(config.request_count):
+        input_tokens = generator.choice(config.input_token_choices)
+        output_tokens = generator.choice(config.output_token_choices)
+        requests.append(
+            RequestSpec(
+                request_id=f"req-{index:06d}",
+                input_tokens=input_tokens,
+                output_tokens=output_tokens,
+                shared_prefix_tokens=int(input_tokens * config.shared_prefix_ratio),
+            )
+        )
+    return tuple(requests)
