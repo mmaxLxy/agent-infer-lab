@@ -56,12 +56,17 @@
 | `ncu` | 2025.2.1，`/usr/local/bin/ncu` |
 | Python | 3.12.3 |
 | Python 虚拟环境 | `/home/ayax/.venvs/agent-infer-lab`，约 14 GiB |
+| CPU 开发环境 | `/home/ayax/.venvs/agent-infer-lab-dev` |
 | PyTorch | 2.11.0+cu129 |
 | PyTorch CUDA | 12.9 |
 | vLLM | 0.23.0+cu129 |
+| uv | 0.11.29，`/home/ayax/.local/bin/uv` |
+| pytest | 9.1.1，仅安装在 CPU 开发环境 |
+| Ruff | 0.15.22，仅安装在 CPU 开发环境 |
 | vLLM 官方 wheel 缓存 | `D:\AIInfra\cache\vllm-0.23.0+cu129-cp38-abi3-manylinux_2_28_x86_64.whl` |
 | wheel SHA256 | `8bc2203995d061e6b988916b71b9dee8a5970f5fdc5f37d4445a877a2fab2cc1` |
 | pip 缓存 | `/home/ayax/.cache/pip`，约 6.2 GiB |
+| uv 缓存 | `/home/ayax/.cache/uv` |
 
 所有 Linux 环境数据都位于 Ubuntu 的 D 盘 VHD 中；项目源码位于 `D:\agent-infer-lab`，在 WSL 中对应 `/mnt/d/agent-infer-lab`。
 
@@ -120,6 +125,18 @@ cd /mnt/d/agent-infer-lab
 python --version
 nvcc --version
 vllm --version
+```
+
+CPU 开发与质量检查：
+
+```bash
+export UV_PROJECT_ENVIRONMENT=/home/ayax/.venvs/agent-infer-lab-dev
+export UV_CACHE_DIR=/home/ayax/.cache/uv
+
+/home/ayax/.local/bin/uv sync --locked
+/home/ayax/.local/bin/uv run --locked pytest -q
+/home/ayax/.local/bin/uv run --locked ruff check .
+/home/ayax/.local/bin/uv run --locked python scripts/check_environment.py --json
 ```
 
 ## 6. 已知限制与下一阶段
