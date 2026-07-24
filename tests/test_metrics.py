@@ -155,3 +155,32 @@ def test_all_single_token_requests_have_no_tpot_percentiles() -> None:
 
     assert summary.tpot_p50_seconds is None
     assert summary.tpot_p99_seconds is None
+
+def test_summarize_metrics_uses_nearest_rank_for_p99() -> None:
+    traces = tuple(
+        make_trace(
+            request_id=f"req-{index:03d}",
+            started_at=0.0,
+            first_token_at=float(index),
+            completed_at=float(index + 1),
+            output_tokens=2,
+        )
+        for index in range(1, 102)
+    )
+
+    summary = summarize_metrics(traces)
+
+    assert summary.ttft_p99_seconds == 100.0
+
+
+def test_summarize_metrics_excludes_single_token_requests_from_tpot() -> None:
+    traces = (
+        make_trace("req-single", 0.0, 1.0, 1.0, 1),
+        make_trace("req-multi-1", 0.0, 1.0, 5.0, 3),
+        make_trace("req-multi-2", 0.0, 1.0, 9.0, 3),
+    )
+
+    summary = summarize_metrics(traces)
+
+    assert summary.tpot_p50_seconds == 2.0
+    assert summary.tpot_p99_seconds == 4.0
