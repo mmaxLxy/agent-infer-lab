@@ -4,7 +4,12 @@ import time
 import pytest
 
 from agent_infer_lab import benchmark
-from agent_infer_lab.benchmark import execute_benchmark, run_benchmark
+from agent_infer_lab.benchmark import (
+    BenchmarkResult,
+    RequestFailure,
+    execute_benchmark,
+    run_benchmark,
+)
 from agent_infer_lab.metrics import MetricsSummary, RequestTrace
 from agent_infer_lab.prompting import PreparedRequest
 from agent_infer_lab.workloads import WorkloadConfig
@@ -36,15 +41,21 @@ def test_run_benchmark_executes_each_request_and_summarizes() -> None:
         seen.append(request.request_id)
         return make_trace(request)
 
-    summary = run_benchmark(
+    result = run_benchmark(
         make_requests(),
         concurrency=2,
         send_request=send,
     )
 
     assert sorted(seen) == ["req-0", "req-1", "req-2", "req-3"]
-    assert summary.request_count == 4
-    assert summary.total_output_tokens == 8
+    assert result.total_requests == 4
+    assert result.successful_requests == 4
+    assert result.failed_requests == 0
+    assert result.success_rate == 1.0
+    assert result.failures == ()
+    assert result.metrics is not None
+    assert result.metrics.request_count == 4
+    assert result.metrics.total_output_tokens == 8
 
 
 def test_run_benchmark_never_exceeds_concurrency() -> None:
@@ -73,16 +84,57 @@ def test_run_benchmark_never_exceeds_concurrency() -> None:
     assert peak == 2
 
 
-def test_run_benchmark_propagates_request_failure() -> None:
-    def send(_: PreparedRequest) -> RequestTrace:
-        raise RuntimeError("service failed")
+def test_run_benchmark_collects_partial_failure() -> None:
+    seen: list[str] = []
 
-    with pytest.raises(RuntimeError, match="service failed"):
-        run_benchmark(
-            make_requests(2),
-            concurrency=1,
-            send_request=send,
-        )
+    def send(request: PreparedRequest) -> RequestTrace:
+        seen.append(request.request_id)
+        if request.request_id == "req-1":
+            try:
+                raise ConnectionRefusedError(111, "Connection refused")
+            except ConnectionRefusedError as error:
+                raise RuntimeError("service failed") from error
+        return make_trace(request)
+
+    result = run_benchmark(
+        make_requests(3),
+        concurrency=2,
+        send_request=send,
+    )
+
+    assert sorted(seen) == ["req-0", "req-1", "req-2"]
+    assert result.total_requests == 3
+    assert result.successful_requests == 2
+    assert result.failed_requests == 1
+    assert result.success_rate == pytest.approx(2 / 3)
+    assert result.metrics is not None
+    assert result.metrics.request_count == 2
+    assert len(result.failures) == 1
+    assert result.failures[0].request_id == "req-1"
+    assert result.failures[0].error_type == "ConnectionRefusedError"
+    assert "Connection refused" in result.failures[0].message
+
+
+def test_run_benchmark_handles_all_requests_failing() -> None:
+    def send(_: PreparedRequest) -> RequestTrace:
+        raise TimeoutError("request timed out")
+
+    result = run_benchmark(
+        make_requests(3),
+        concurrency=2,
+        send_request=send,
+    )
+
+    assert result.total_requests == 3
+    assert result.successful_requests == 0
+    assert result.failed_requests == 3
+    assert result.success_rate == 0.0
+    assert result.metrics is None
+    assert len(result.failures) == 3
+    assert all(
+        failure.error_type == "TimeoutError"
+        for failure in result.failures
+    )
 
 
 @pytest.mark.parametrize("concurrency", [0, -1, True])
@@ -130,7 +182,7 @@ def test_execute_benchmark_connects_existing_components(
         PreparedRequest("req-000000", (1, 2, 3, 4), 2),
         PreparedRequest("req-000001", (1, 2, 5, 6), 2),
     )
-    expected = MetricsSummary(
+    expected_metrics = MetricsSummary(
         request_count=2,
         total_output_tokens=4,
         duration_seconds=2.0,
@@ -141,6 +193,14 @@ def test_execute_benchmark_connects_existing_components(
         tpot_p99_seconds=1.8,
         e2e_p50_seconds=1.0,
         e2e_p99_seconds=2.0,
+    )
+    expected_result = BenchmarkResult(
+        total_requests=2,
+        successful_requests=2,
+        failed_requests=0,
+        success_rate=1.0,
+        metrics=expected_metrics,
+        failures=(),
     )
 
     class FakeClient:
@@ -161,20 +221,20 @@ def test_execute_benchmark_connects_existing_components(
     monkeypatch.setattr(
         benchmark,
         "run_benchmark",
-        lambda prepared, *, concurrency, send_request: expected,
+        lambda prepared, *, concurrency, send_request: expected_result,
     )
 
     assert execute_benchmark(
         config,
         FakeClient(),  # type: ignore[arg-type]
-    ) == expected
+    ) == expected_result
 
 
-def test_main_prints_summary(
+def test_main_prints_successful_summary(
     monkeypatch: pytest.MonkeyPatch,
     capsys: pytest.CaptureFixture[str],
 ) -> None:
-    summary = MetricsSummary(
+    metrics = MetricsSummary(
         request_count=2,
         total_output_tokens=8,
         duration_seconds=2.0,
@@ -186,10 +246,18 @@ def test_main_prints_summary(
         e2e_p50_seconds=1.0,
         e2e_p99_seconds=1.2,
     )
+    result = BenchmarkResult(
+        total_requests=2,
+        successful_requests=2,
+        failed_requests=0,
+        success_rate=1.0,
+        metrics=metrics,
+        failures=(),
+    )
     monkeypatch.setattr(
         benchmark,
         "execute_benchmark",
-        lambda config, client: summary,
+        lambda config, client: result,
     )
 
     benchmark.main(
@@ -204,6 +272,68 @@ def test_main_prints_summary(
     )
 
     output = capsys.readouterr().out
-    assert "requests: 2" in output
+    assert "total_requests: 2" in output
+    assert "successful_requests: 2" in output
+    assert "failed_requests: 0" in output
+    assert "success_rate: 1.000000" in output
+    assert "metrics_scope: successful_requests_only" in output
     assert "output_throughput_tokens_per_second: 4.000000" in output
     assert "ttft_p99_seconds: 0.200000" in output
+    assert "failure_types: none" in output
+
+
+def test_main_prints_failures_without_successful_metrics(
+    monkeypatch: pytest.MonkeyPatch,
+    capsys: pytest.CaptureFixture[str],
+) -> None:
+    failures = (
+        RequestFailure(
+            request_id="req-0",
+            error_type="ConnectionRefusedError",
+            message="[Errno 111] Connection refused",
+        ),
+        RequestFailure(
+            request_id="req-1",
+            error_type="ConnectionRefusedError",
+            message="[Errno 111] Connection refused",
+        ),
+        RequestFailure(
+            request_id="req-2",
+            error_type="TimeoutError",
+            message="request timed out",
+        ),
+    )
+    result = BenchmarkResult(
+        total_requests=3,
+        successful_requests=0,
+        failed_requests=3,
+        success_rate=0.0,
+        metrics=None,
+        failures=failures,
+    )
+    monkeypatch.setattr(
+        benchmark,
+        "execute_benchmark",
+        lambda config, client: result,
+    )
+
+    benchmark.main(
+        [
+            "--model",
+            "test-model",
+            "--requests",
+            "3",
+            "--concurrency",
+            "1",
+        ]
+    )
+
+    output = capsys.readouterr().out
+    assert "total_requests: 3" in output
+    assert "successful_requests: 0" in output
+    assert "failed_requests: 3" in output
+    assert "success_rate: 0.000000" in output
+    assert "successful_metrics: N/A" in output
+    assert "ConnectionRefusedError: 2" in output
+    assert "TimeoutError: 1" in output
+    assert "req-0: ConnectionRefusedError" in output

@@ -1,8 +1,10 @@
 """Fixed-concurrency execution for reproducible vLLM benchmarks."""
 
 import argparse
+from collections import Counter
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
+from dataclasses import dataclass
 
 from agent_infer_lab.metrics import MetricsSummary, RequestTrace, summarize_metrics
 from agent_infer_lab.prompting import PreparedRequest, prepare_requests
@@ -12,13 +14,54 @@ from agent_infer_lab.workloads import WorkloadConfig, generate_workload
 SendRequest = Callable[[PreparedRequest], RequestTrace]
 
 
+@dataclass(frozen=True)
+class RequestFailure:
+    """Failure information collected from one request."""
+
+    request_id: str
+    error_type: str
+    message: str
+
+
+@dataclass(frozen=True)
+class BenchmarkResult:
+    """Successful metrics and failures collected from one benchmark run."""
+
+    total_requests: int
+    successful_requests: int
+    failed_requests: int
+    success_rate: float
+    metrics: MetricsSummary | None
+    failures: tuple[RequestFailure, ...]
+
+
+RequestOutcome = RequestTrace | RequestFailure
+
+
+def _request_failure(
+    request: PreparedRequest,
+    error: Exception,
+) -> RequestFailure:
+    """Convert an exception chain into stable failure information."""
+
+    root_error: BaseException = error
+    while root_error.__cause__ is not None:
+        root_error = root_error.__cause__
+
+    return RequestFailure(
+        request_id=request.request_id,
+        error_type=type(root_error).__name__,
+        message=str(root_error) or repr(root_error),
+    )
+
+
 def run_benchmark(
     requests: tuple[PreparedRequest, ...],
     *,
     concurrency: int,
     send_request: SendRequest,
-) -> MetricsSummary:
-    """Run all requests with a fixed maximum concurrency."""
+) -> BenchmarkResult:
+    """Run every request and collect both successes and failures."""
 
     if not requests:
         raise ValueError("requests must not be empty")
@@ -31,15 +74,41 @@ def run_benchmark(
     if concurrency > len(requests):
         raise ValueError("concurrency cannot exceed request count")
 
+    def execute_one(request: PreparedRequest) -> RequestOutcome:
+        try:
+            return send_request(request)
+        except Exception as error:  # noqa: BLE001
+            return _request_failure(request, error)
+
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
-        traces = tuple(executor.map(send_request, requests))
-    return summarize_metrics(traces)
+        outcomes = tuple(executor.map(execute_one, requests))
+
+    traces = tuple(
+        outcome
+        for outcome in outcomes
+        if isinstance(outcome, RequestTrace)
+    )
+    failures = tuple(
+        outcome
+        for outcome in outcomes
+        if isinstance(outcome, RequestFailure)
+    )
+    metrics = summarize_metrics(traces) if traces else None
+
+    return BenchmarkResult(
+        total_requests=len(requests),
+        successful_requests=len(traces),
+        failed_requests=len(failures),
+        success_rate=len(traces) / len(requests),
+        metrics=metrics,
+        failures=failures,
+    )
 
 
 def execute_benchmark(
     config: WorkloadConfig,
     client: VllmClient,
-) -> MetricsSummary:
+) -> BenchmarkResult:
     """Prepare exact prompts, execute requests, and summarize results."""
 
     specs = generate_workload(config)
@@ -95,6 +164,46 @@ def _format_optional(value: float | None) -> str:
     return "N/A" if value is None else f"{value:.6f}"
 
 
+def _print_metrics(metrics: MetricsSummary | None) -> None:
+    if metrics is None:
+        print("successful_metrics: N/A")
+        return
+
+    print("metrics_scope: successful_requests_only")
+    print(f"output_tokens: {metrics.total_output_tokens}")
+    print(f"duration_seconds: {metrics.duration_seconds:.6f}")
+    print(
+        "output_throughput_tokens_per_second: "
+        f"{metrics.output_throughput_tokens_per_second:.6f}"
+    )
+    print(f"ttft_p50_seconds: {metrics.ttft_p50_seconds:.6f}")
+    print(f"ttft_p99_seconds: {metrics.ttft_p99_seconds:.6f}")
+    print(f"tpot_p50_seconds: {_format_optional(metrics.tpot_p50_seconds)}")
+    print(f"tpot_p99_seconds: {_format_optional(metrics.tpot_p99_seconds)}")
+    print(f"e2e_p50_seconds: {metrics.e2e_p50_seconds:.6f}")
+    print(f"e2e_p99_seconds: {metrics.e2e_p99_seconds:.6f}")
+
+
+def _print_failures(failures: tuple[RequestFailure, ...]) -> None:
+    if not failures:
+        print("failure_types: none")
+        return
+
+    failure_counts = Counter(failure.error_type for failure in failures)
+    print("failure_types:")
+    for error_type, count in sorted(failure_counts.items()):
+        print(f"  {error_type}: {count}")
+
+    print("failure_details:")
+    for failure in failures[:10]:
+        print(
+            f"  {failure.request_id}: "
+            f"{failure.error_type}: {failure.message}"
+        )
+    if len(failures) > 10:
+        print(f"  ... {len(failures) - 10} more failures")
+
+
 def main(argv: Sequence[str] | None = None) -> None:
     args = build_parser().parse_args(argv)
     config = WorkloadConfig(
@@ -110,21 +219,14 @@ def main(argv: Sequence[str] | None = None) -> None:
         model=args.model,
         timeout=args.timeout,
     )
-    summary = execute_benchmark(config, client)
+    result = execute_benchmark(config, client)
 
-    print(f"requests: {summary.request_count}")
-    print(f"output_tokens: {summary.total_output_tokens}")
-    print(f"duration_seconds: {summary.duration_seconds:.6f}")
-    print(
-        "output_throughput_tokens_per_second: "
-        f"{summary.output_throughput_tokens_per_second:.6f}"
-    )
-    print(f"ttft_p50_seconds: {summary.ttft_p50_seconds:.6f}")
-    print(f"ttft_p99_seconds: {summary.ttft_p99_seconds:.6f}")
-    print(f"tpot_p50_seconds: {_format_optional(summary.tpot_p50_seconds)}")
-    print(f"tpot_p99_seconds: {_format_optional(summary.tpot_p99_seconds)}")
-    print(f"e2e_p50_seconds: {summary.e2e_p50_seconds:.6f}")
-    print(f"e2e_p99_seconds: {summary.e2e_p99_seconds:.6f}")
+    print(f"total_requests: {result.total_requests}")
+    print(f"successful_requests: {result.successful_requests}")
+    print(f"failed_requests: {result.failed_requests}")
+    print(f"success_rate: {result.success_rate:.6f}")
+    _print_metrics(result.metrics)
+    _print_failures(result.failures)
 
 
 if __name__ == "__main__":
