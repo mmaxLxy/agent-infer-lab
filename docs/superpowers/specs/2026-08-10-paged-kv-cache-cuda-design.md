@@ -143,6 +143,7 @@ PyTorch参考实现只描述语义，不承担性能目标。CUDA输出必须与
 计划新增：
 
 ```text
+src/agent_infer_lab/kv_cache_layout.py # 纯CPU槽位映射与输入约束
 cuda/kv_cache_ops.cpp              # PyTorch C++绑定与输入校验
 cuda/kv_cache_kernels.cu           # Append/Gather CUDA Kernel
 cuda/reference.py                  # PyTorch参考实现
