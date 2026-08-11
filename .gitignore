@@ -8,6 +8,7 @@ __pycache__/
 # Build artifacts
 build/
 dist/
+.torch_extensions/
 *.egg-info/
 *.so
 *.pyd
