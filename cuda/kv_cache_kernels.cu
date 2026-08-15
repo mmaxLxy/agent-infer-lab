@@ -29,6 +29,37 @@ __global__ void resolve_slots_kernel(
     locations[index * 2 + 1] = slot % block_size;
 }
 
+__global__ void append_kv_cache_kernel(
+    const at::Half* keys,
+    const at::Half* values,
+    at::Half* key_cache,
+    at::Half* value_cache,
+    const std::int64_t* slot_mapping,
+    std::int64_t num_elements,
+    std::int64_t values_per_token
+) {
+    const std::int64_t element_index =
+        static_cast<std::int64_t>(blockIdx.x) * blockDim.x
+        + threadIdx.x;
+
+    if (element_index >= num_elements) {
+        return;
+    }
+
+    const std::int64_t token_index =
+        element_index / values_per_token;
+    const std::int64_t value_offset =
+        element_index % values_per_token;
+    const std::int64_t slot =
+        slot_mapping[token_index];
+
+    const std::int64_t cache_index =
+        slot * values_per_token + value_offset;
+
+    key_cache[cache_index] = keys[element_index];
+    value_cache[cache_index] = values[element_index];
+}
+
 }  // namespace
 
 torch::Tensor resolve_slots_cuda(
@@ -74,4 +105,51 @@ torch::Tensor resolve_slots_cuda(
     C10_CUDA_KERNEL_LAUNCH_CHECK();
 
     return locations;
+}
+
+void append_kv_cache_cuda(
+    torch::Tensor keys,
+    torch::Tensor values,
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    const c10::cuda::CUDAGuard device_guard(keys.device());
+
+    const std::int64_t num_elements = keys.numel();
+
+    if (num_elements == 0) {
+        return;
+    }
+
+    const std::int64_t values_per_token =
+        keys.size(1) * keys.size(2);
+
+    constexpr int threads_per_block = 256;
+    const int num_thread_blocks = static_cast<int>(
+        (num_elements + threads_per_block - 1)
+        / threads_per_block
+    );
+
+    const cudaStream_t stream =
+        at::cuda::getCurrentCUDAStream(
+            keys.get_device()
+        ).stream();
+
+    append_kv_cache_kernel<<<
+        num_thread_blocks,
+        threads_per_block,
+        0,
+        stream
+    >>>(
+        keys.data_ptr<at::Half>(),
+        values.data_ptr<at::Half>(),
+        key_cache.data_ptr<at::Half>(),
+        value_cache.data_ptr<at::Half>(),
+        slot_mapping.data_ptr<std::int64_t>(),
+        num_elements,
+        values_per_token
+    );
+
+    C10_CUDA_KERNEL_LAUNCH_CHECK();
 }
