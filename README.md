@@ -205,5 +205,3 @@ cd /mnt/d/agent-infer-lab
 
 - [环境记录](docs/environment.md)
 - [Prefix Cache 实验报告](docs/experiments/2026-08-10-prefix-cache.md)
-- [Paged KV Cache CUDA 设计](docs/superpowers/specs/2026-08-10-paged-kv-cache-cuda-design.md)
-- [Paged KV Cache CUDA 执行计划](docs/superpowers/plans/2026-08-10-paged-kv-cache-cuda.md)
