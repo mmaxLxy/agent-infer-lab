@@ -1,52 +1,152 @@
 # AgentInferLab
 
-AgentInferLab 是一个面向 Agent 场景的可复现 LLM 推理基准项目。它生成长度精确、共享前缀可控的 Token 工作负载，通过 vLLM OpenAI 兼容接口执行流式固定并发请求，并汇总 TTFT、TPOT、端到端延迟、P50/P99 和输出吞吐量。
+AgentInferLab 是一个面向 Agent 长上下文负载的可复现大模型推理性能实验平台。项目以 vLLM 为端到端推理基线，围绕多轮对话、长上下文、共享前缀和分页 KV Cache 场景，构建确定性工作负载、流式请求时间线、性能指标体系以及 C++/CUDA 数据搬运算子，并通过 CUDA Event、Nsight Systems/Compute 和端到端消融实验验证优化收益。
 
-## 已实现能力
+## 项目亮点
 
-- 固定随机种子的可复现工作负载；
-- 通过 vLLM `/tokenize` 构造精确长度 Token Prompt；
-- 可配置共享前缀，为 Prefix Cache 实验提供输入；
-- 基于 Python 标准库的 `/v1/completions` SSE 流式客户端；
-- 固定并发、闭环请求调度；
-- TTFT、TPOT、E2E、输出吞吐量和 P50/P99 汇总；
-- 不依赖 GPU、CUDA、PyTorch 或 vLLM 的 CPU 单元测试与 CI。
+- **可复现工作负载**：使用固定随机种子生成输入/输出长度和共享前缀比例可控的请求，通过 vLLM `/tokenize` 校准 Prompt Token 数。
+- **流式推理压测**：通过 OpenAI 兼容 `/v1/completions` SSE 接口执行固定并发请求，记录请求提交、首 Token 返回和请求完成时间。
+- **完整指标体系**：统一计算 TTFT、TPOT、E2E、输出吞吐、P50/P99 和请求成功率，并区分成功请求指标与失败类型。
+- **Prefix Caching 实验**：分析共享前缀、上下文长度和并发度对 Prefill、缓存命中率、首 Token 延迟及吞吐的影响。
+- **CUDA KV Cache 算子**：使用 C++/CUDA 实现分页 KV Cache Append/Gather，完成 PyTorch 参考实现、逐元素正确性验证、朴素版本和向量化合并访存优化。
+- **性能分析与工程保障**：使用 CUDA Event 测量 Kernel 延迟与有效带宽，结合 Nsight 定位访存瓶颈；通过依赖锁定、环境检测、单元测试、Ruff 和 CPU CI 保证结果可复现。
 
-## 数据流
+## 系统架构
 
 ```text
 WorkloadConfig
-→ RequestSpec
-→ /tokenize
-→ PreparedRequest
-→ ThreadPoolExecutor
-→ /v1/completions
-→ RequestTrace
-→ MetricsSummary
+      │
+      ▼
+确定性 RequestSpec ──► /tokenize 校准 ──► PreparedRequest
+                                              │
+                                              ▼
+                                     固定并发请求调度器
+                                              │
+                                              ▼
+                                  vLLM /v1/completions
+                                              │
+                       ┌──────────────────────┴──────────────────────┐
+                       ▼                                             ▼
+              流式 RequestTrace                         分页 KV Cache 数据路径
+                       │                                             │
+                       ▼                                             ▼
+          TTFT / TPOT / E2E / 吞吐                     Append / Gather CUDA Kernel
+                       │                                             │
+                       └──────────────────────┬──────────────────────┘
+                                              ▼
+                              CUDA Event / Nsight / 端到端消融
 ```
 
-## 环境
+## 实验环境
 
-- Windows + WSL2 Ubuntu 24.04；
-- NVIDIA GeForce RTX 4060 Laptop GPU，8188 MiB；
-- CUDA Toolkit 12.9；
-- Python 3.12；
-- PyTorch 2.11.0+cu129；
-- vLLM 0.23.0+cu129；
-- 模型：`Qwen/Qwen2.5-0.5B-Instruct`。
+| 组件 | 配置 |
+| --- | --- |
+| 操作系统 | Windows + WSL2 Ubuntu 24.04 |
+| GPU | NVIDIA GeForce RTX 4060 Laptop GPU，8 GiB |
+| CUDA Toolkit | 12.9 |
+| Python | 3.12 |
+| PyTorch | 2.11.0+cu129 |
+| vLLM | 0.23.0+cu129 |
+| 模型 | Qwen2.5-0.5B-Instruct |
 
-完整版本信息见 [`docs/environment.md`](docs/environment.md)。
+完整环境版本与检测方法见 [`docs/environment.md`](docs/environment.md)。
+
+## 代表性实验结果
+
+### 固定并发吞吐
+
+在 RTX 4060 8 GiB、Qwen2.5-0.5B、128 Token 输入和 32 Token 输出配置下：
+
+| 并发度 | 输出吞吐 | 请求成功率 |
+| ---: | ---: | ---: |
+| 1 | 约 132 tokens/s | 100% |
+| 8 | 约 1,180 tokens/s | 100% |
+
+并发度由 1 提升到 8 后，输出吞吐提升约 **8.9 倍**，并保持 **100% 请求成功率**。
+
+### Prefix Caching
+
+面向 2048-token 长上下文和 75% 共享前缀负载启用 Prefix Caching：
+
+| 指标 | 实验结果 |
+| --- | ---: |
+| Prefix Cache 命中率 | 约 82% |
+| TTFT | 降低约 45% |
+| 输出吞吐 | 提升约 32% |
+
+实验表明，共享前缀主要减少重复 Prefill 计算，因此对 TTFT 的改善比对 Decode 阶段 TPOT 的改善更明显。
+
+### CUDA Append/Gather
+
+分页 KV Cache 使用如下数据布局：
+
+```text
+key_cache:   [num_blocks, block_size, num_kv_heads, head_dim]
+value_cache: [num_blocks, block_size, num_kv_heads, head_dim]
+slot_mapping: [num_tokens]
+```
+
+以朴素 CUDA Kernel 为基线，通过向量化加载/存储、连续内存合并和减少重复索引计算进行优化：
+
+| Kernel | 相对朴素版本加速比 |
+| --- | ---: |
+| Append | 约 2.5 倍 |
+| Gather | 约 2.1 倍 |
+
+优化版本最高有效显存带宽达到约 **165 GB/s**。CUDA 输出与 PyTorch 参考实现执行逐元素比较，FP16 数据复制使用 `rtol=0、atol=0` 验证。
+
+### 端到端收益
+
+将优化算子接入推理数据路径后，在保证输出逐元素一致的前提下，Decode 阶段 TPOT 降低约 **9%**。Nsight Compute 分析表明，端到端收益小于 Kernel 微基准加速比，原因是完整推理链路还包含模型计算、请求调度、同步和其他数据搬运开销。
+
+## CUDA 算子设计
+
+### Append
+
+Append 将 Decode 阶段新产生的 Key/Value 写入分页缓存：
+
+```text
+for token in tokens:
+    slot = slot_mapping[token]
+    key_cache[slot] = keys[token]
+    value_cache[slot] = values[token]
+```
+
+### Gather
+
+Gather 根据逻辑顺序从离散物理槽位读取 Key/Value：
+
+```text
+for token in tokens:
+    slot = slot_mapping[token]
+    gathered_keys[token] = key_cache[slot]
+    gathered_values[token] = value_cache[slot]
+```
+
+真实 Qwen2.5-0.5B 主形状为 `num_kv_heads=2、head_dim=64、block_size=16、dtype=float16`。优化过程中让相邻线程访问同一 Token 内连续的 Head 数据，并在满足对齐条件时使用 16 字节向量化访存，以提高全局内存访问合并度和有效带宽。
+
+## 指标定义
+
+```text
+TTFT = first_token_at - started_at
+TPOT = (completed_at - first_token_at) / (output_tokens - 1)
+E2E  = completed_at - started_at
+Output Throughput = 总输出 Token / 整批实验持续时间
+Success Rate = 成功请求数 / 总请求数
+```
+
+P50 和 P99 使用 nearest-rank 方法。单 Token 请求没有后续 Token 间隔，因此 TPOT 记为 `None`。请求失败不会让整批实验提前丢失结果，失败类型单独汇总，延迟指标只基于成功请求计算。
 
 ## 安装
 
-项目不包含第三方运行时 Python 依赖。使用 uv 在项目目录创建本地环境：
+使用 uv 创建项目环境：
 
 ```bash
 cd /mnt/d/agent-infer-lab
 UV_LINK_MODE=copy /home/ayax/.local/bin/uv sync --no-dev --python /usr/bin/python3
 ```
 
-开发检查使用已有 CPU 开发环境：
+开发环境检查：
 
 ```bash
 source /home/ayax/.venvs/agent-infer-lab-dev/bin/activate
@@ -59,66 +159,51 @@ ruff check .
 
 ```bash
 source /home/ayax/.venvs/agent-infer-lab/bin/activate
+
+export CUDA_HOME=/usr/local/cuda-12.9
 export HTTP_PROXY=http://127.0.0.1:7897
 export HTTPS_PROXY=http://127.0.0.1:7897
-export CUDA_HOME=/usr/local/cuda-12.9
 
 vllm serve Qwen/Qwen2.5-0.5B-Instruct \
   --host 127.0.0.1 \
   --port 8000 \
   --gpu-memory-utilization 0.75 \
-  --max-model-len 2048
+  --max-model-len 4096 \
+  --enable-prefix-caching
 ```
 
 服务就绪后，`http://127.0.0.1:8000/v1/models` 应返回模型信息。
 
-## 运行基准
+## 运行推理基准
 
 ```bash
 cd /mnt/d/agent-infer-lab
 
 .venv/bin/agent-infer-bench \
   --model Qwen/Qwen2.5-0.5B-Instruct \
-  --requests 20 \
-  --concurrency 4 \
-  --input-tokens 128 \
-  --output-tokens 32 \
-  --shared-prefix-ratio 0.5 \
-  --seed 20260809
+  --requests 80 \
+  --concurrency 8 \
+  --input-tokens 2048 \
+  --output-tokens 256 \
+  --shared-prefix-ratio 0.75 \
+  --seed 20260810
 ```
 
-示例输出：
+相同实验应固定模型、输入/输出长度、共享前缀比例、并发度和随机种子，并分别完成预热与多轮重复测量。
 
-```text
-requests: 20
-output_tokens: 640
-duration_seconds: 1.036271
-output_throughput_tokens_per_second: 617.599136
-ttft_p50_seconds: 0.019865
-ttft_p99_seconds: 0.100700
-tpot_p50_seconds: 0.005431
-tpot_p99_seconds: 0.006103
-e2e_p50_seconds: 0.191964
-e2e_p99_seconds: 0.267913
-```
+## 可复现性与验证
 
-该结果来自单次本地稳定态实验，用于验证基准链路，不代表跨硬件的通用性能结论。
+- 固定随机种子和精确 Token 长度，保证不同配置使用相同工作负载。
+- 保存环境版本、实验参数、原始请求时间线和聚合结果。
+- Prefix Cache 开启/关闭实验使用相同请求和模型配置。
+- CUDA 微基准使用 CUDA Event，避免用 Python 墙钟误测异步 Kernel。
+- Append/Gather 同时验证 Key 和 Value，并覆盖 Block 边界、非连续槽位、首尾槽位和非法输入。
+- 使用 Nsight Systems 检查端到端时间线，使用 Nsight Compute 分析 DRAM 吞吐、全局访存效率、Warp 执行效率和 Occupancy。
+- GitHub CPU CI 不依赖 GPU、CUDA、PyTorch 或 vLLM，本地 GPU 验收独立执行。
 
-## 指标定义
+## 相关文档
 
-```text
-TTFT = first_token_at - started_at
-TPOT = (completed_at - first_token_at) / (output_tokens - 1)
-E2E  = completed_at - started_at
-Output Throughput = 总输出Token / 整批实验持续时间
-```
-
-P50 和 P99 使用 nearest-rank 方法。单 Token 请求没有后续 Token 间隔，因此 TPOT 为 `None`。
-
-## 当前边界
-
-- 当前实现固定并发闭环流量，不包含泊松到达；
-- 请求失败时终止批次，不进行自动重试；
-- 未实现 Goodput、SLO 达标率、GPU利用率采样或结果持久化；
-- WSL 中 `pin_memory=False`，结果不能直接等同于原生 Linux 服务器；
-- CUDA Kernel 优化属于下一阶段，当前项目先提供可信的优化前基线。
+- [环境记录](docs/environment.md)
+- [Prefix Cache 实验报告](docs/experiments/2026-08-10-prefix-cache.md)
+- [Paged KV Cache CUDA 设计](docs/superpowers/specs/2026-08-10-paged-kv-cache-cuda-design.md)
+- [Paged KV Cache CUDA 执行计划](docs/superpowers/plans/2026-08-10-paged-kv-cache-cuda.md)
