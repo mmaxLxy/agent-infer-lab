@@ -6,6 +6,8 @@
 
 实现一组能够解释分页 KV Cache数据搬运原理的 C++/CUDA算子，并用PyTorch参考实现、正确性测试、CUDA Event基准和Nsight分析证明结果可信。
 
+证据链严格拆分：PyTorch参考实现只作为correctness oracle（正确性标准答案）；Kernel性能只比较同一CUDA扩展内的朴素版和逐项优化版；端到端性能只比较同一版本vLLM中仅改变一个变量的配置。禁止用PyTorch与vLLM的跨系统差异证明Kernel增量收益。
+
 本阶段首先优化单层KV Cache的数据搬运，不直接修改vLLM源码。端到端集成放在独立验收步骤，避免把算子正确性、编译问题和服务问题混在一起调试。
 
 ## 2. 与真实模型的关系
@@ -115,21 +117,29 @@ PyTorch参考实现只描述语义，不承担性能目标。CUDA输出必须与
 
 ## 6. CUDA实现路线
 
-### 6.1 朴素版本
+### 6.1 V0朴素基线
 
-先建立正确基线：一个线程负责一个或少量元素，根据slot计算目标地址并复制。
+真正的朴素基线由一个CUDA线程负责一个Token，并使用标量循环复制该Token的全部Key/Value元素。该实现优先保证语义直观，不主动构造合并访存或向量化访问。
 
-该版本的用途是验证接口、索引和数据布局，不要求快。
+该版本是同一扩展内所有Kernel加速比的唯一主分母。现有“一线程对应一个连续元素”的实现已经具有合并访存特征，应归入V1，不能继续称为未优化基线。
 
-### 6.2 向量化版本
+### 6.2 V1合并访存
+
+使用一维连续元素映射，让相邻线程访问同一Token内连续的head维数据。除线程到元素的映射外，输入、输出、Stream、编译选项和计时边界与V0保持一致。
+
+### 6.3 V2向量化
 
 在地址满足对齐条件时，使用16字节向量化加载和存储，减少指令数量，并让一个warp访问连续地址。
 
 不满足对齐或尾部不足16字节时必须走正确的标量路径，不能为了性能假设所有输入天然对齐。
 
-### 6.3 合并访存
+### 6.4 V3线程布局
 
-线程映射优先让相邻线程访问同一Token中连续的 `head_dim` 元素，使全局内存访问尽量合并。
+在保持V2向量宽度不变的情况下，改为一个CTA或Warp协作处理一个Token，减少跨Token地址跳转和重复slot读取。线程布局的收益单独报告，不能与向量化合并成一个版本。
+
+### 6.5 V4其他优化
+
+其他优化拆成独立变体，例如地址计算提前、`__restrict__`、Qwen主形状特化或launch参数调整。每个变体一次只增加一个变量；没有正收益的优化保留真实负结果，不并入最终版本。
 
 本算子主要受显存带宽限制，优化重点是：
 
@@ -162,9 +172,28 @@ CUDA扩展是可选开发组件，不加入核心Python运行时依赖。GitHub 
 2. 正式测量至少1000次。
 3. 测量前后正确同步。
 4. 报告中位数或稳定均值、搬运字节数与有效带宽。
-5. 与PyTorch参考数据搬运方式和朴素CUDA版本分别比较。
+5. 主性能基线只使用同一扩展中的V0朴素CUDA Kernel；PyTorch只用于正确性验证，不参与加速比计算。
 
 有效带宽必须按实际读写字节计算，不能只报告倍数。
+
+报告必须同时给出相邻版本增量收益和相对V0的累计收益，避免只展示最终版本。Kernel指标与端到端TTFT、TPOT、吞吐指标分表保存，禁止互相换算。
+
+### 8.1 实验产物
+
+每次实验使用不可覆盖的run_id，至少保存：
+
+```text
+results/<run_id>/manifest.json
+results/<run_id>/commands.sh
+results/<run_id>/workload.jsonl
+results/<run_id>/raw/kernel_samples.csv
+results/<run_id>/raw/requests.jsonl
+results/<run_id>/raw/server.log
+results/<run_id>/summary/kernel.json
+results/<run_id>/summary/end_to_end.json
+```
+
+`manifest.json`记录Git commit、工作区状态、GPU、驱动、CUDA、Python、PyTorch、vLLM、模型revision、完整命令、输入分布、随机种子、预热次数、正式次数和重复轮数。估算数字单独保存在“非实测”参考文档中，不得混入summary或report。
 
 ## 9. Nsight分析
 
@@ -184,7 +213,10 @@ CUDA扩展是可选开发组件，不加入核心Python运行时依赖。GitHub 
 - Append与Gather均有PyTorch参考实现和CUDA实现。
 - 正确性覆盖边界、随机槽位和真实Qwen形状。
 - 朴素版与优化版使用相同输入比较。
+- 完成V0到V4的逐项消融，同时报告相邻增量和累计收益。
 - 给出真实耗时、加速比和有效带宽，不提前编造目标数字。
+- Kernel与端到端使用两套指标表，PyTorch只作为correctness oracle。
+- 保存完整环境、命令、输入分布和未汇总原始结果。
 - 保存Nsight命令、报告路径和关键观察。
 - 全量CPU测试与Ruff继续通过。
 - CUDA不可用时CPU CI不会失败，但本机GPU验收必须真实通过。
