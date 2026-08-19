@@ -1,6 +1,6 @@
 # AgentInferLab
 
-AgentInferLab 是一个面向 Agent 长上下文负载的可复现大模型推理性能实验平台。项目以 vLLM 为端到端推理基线，围绕多轮对话、长上下文、共享前缀和分页 KV Cache 场景，构建确定性工作负载、流式请求时间线、性能指标体系以及 C++/CUDA 数据搬运算子，并通过 CUDA Event、Nsight Systems/Compute 和端到端消融实验验证优化收益。
+AgentInferLab 是一个面向 Agent 长上下文负载的可复现大模型推理性能实验平台。项目将证据链拆分为两个边界：端到端实验只在同一版本 vanilla vLLM 内进行系统配置消融，Kernel 实验只在同一 CUDA 扩展内以朴素 Kernel 为基线进行逐项消融。PyTorch 参考实现仅作为 correctness oracle（正确性标准答案），不用于证明 vLLM 或自定义 Kernel 的增量性能收益。
 
 ## 项目亮点
 
@@ -8,7 +8,7 @@ AgentInferLab 是一个面向 Agent 长上下文负载的可复现大模型推�
 - **流式推理压测**：通过 OpenAI 兼容 `/v1/completions` SSE 接口执行固定并发请求，记录请求提交、首 Token 返回和请求完成时间。
 - **完整指标体系**：统一计算 TTFT、TPOT、E2E、输出吞吐、P50/P99 和请求成功率，并区分成功请求指标与失败类型。
 - **Prefix Caching 实验**：分析共享前缀、上下文长度和并发度对 Prefill、缓存命中率、首 Token 延迟及吞吐的影响。
-- **CUDA KV Cache 算子**：使用 C++/CUDA 实现分页 KV Cache Append/Gather，完成 PyTorch 参考实现、逐元素正确性验证、朴素版本和向量化合并访存优化。
+- **CUDA KV Cache 算子**：使用 C++/CUDA 实现分页 KV Cache Append/Gather；PyTorch 参考实现只负责逐元素正确性验证，性能比较统一采用同一扩展内的朴素 Kernel。
 - **性能分析与工程保障**：使用 CUDA Event 测量 Kernel 延迟与有效带宽，结合 Nsight 定位访存瓶颈；通过依赖锁定、环境检测、单元测试、Ruff 和 CPU CI 保证结果可复现。
 
 ## 系统架构
@@ -51,53 +51,40 @@ WorkloadConfig
 
 完整环境版本与检测方法见 [`docs/environment.md`](docs/environment.md)。
 
-## 代表性实验结果
+## 实验证据
 
-### 固定并发吞吐
+### 同版本 vLLM：Prefix Caching 系统消融
 
-在 RTX 4060 8 GiB、Qwen2.5-0.5B、128 Token 输入和 32 Token 输出配置下：
+现有可追踪实验只比较 vLLM 0.23.0 在 Prefix Cache 关闭和开启时的系统表现。模型、请求数、并发度、输出长度、共享前缀比例和随机种子保持一致；该结果用于说明 Prefix Caching 的系统级收益，不用于证明任何自定义 CUDA Kernel 的收益。
 
-| 并发度 | 输出吞吐 | 请求成功率 |
-| ---: | ---: | ---: |
-| 1 | 约 132 tokens/s | 100% |
-| 8 | 约 1,180 tokens/s | 100% |
+| 输入长度 | Cache 开启累计命中率 | 输出吞吐提升 | TTFT P99 降低 | E2E P99 降低 |
+| ---: | ---: | ---: | ---: | ---: |
+| 512 | 72.6% | 11.9% | 40.3% | 8.0% |
+| 1024 | 72.8% | 24.3% | 63.9% | 16.2% |
+| 1536 | 72.8% | 38.5% | 50.6% | 28.2% |
 
-并发度由 1 提升到 8 后，输出吞吐提升约 **8.9 倍**，并保持 **100% 请求成功率**。
+每个配置当前只有一轮正式结果，因此定位为工程阶段基准，不外推为其他 GPU、模型或负载的通用结论。完整参数、筛选规则和原始数值见 [Prefix Cache 实验报告](docs/experiments/2026-08-10-prefix-cache.md)。
 
-### Prefix Caching
+### 同一 CUDA 扩展：Kernel 逐项消融
 
-面向 2048-token 长上下文和 75% 共享前缀负载启用 Prefix Caching：
-
-| 指标 | 实验结果 |
-| --- | ---: |
-| Prefix Cache 命中率 | 约 82% |
-| TTFT | 降低约 45% |
-| 输出吞吐 | 提升约 32% |
-
-实验表明，共享前缀主要减少重复 Prefill 计算，因此对 TTFT 的改善比对 Decode 阶段 TPOT 的改善更明显。
-
-### CUDA Append/Gather
-
-分页 KV Cache 使用如下数据布局：
+Kernel 性能归因统一使用同一扩展、相同输入张量、相同 CUDA Stream 和相同编译选项，按以下顺序逐项增加变量：
 
 ```text
-key_cache:   [num_blocks, block_size, num_kv_heads, head_dim]
-value_cache: [num_blocks, block_size, num_kv_heads, head_dim]
-slot_mapping: [num_tokens]
+朴素 Kernel
+→ 合并访存
+→ 向量化
+→ 线程布局
+→ 地址计算或主形状特化
 ```
 
-以朴素 CUDA Kernel 为基线，通过向量化加载/存储、连续内存合并和减少重复索引计算进行优化：
+Kernel 层单独报告 CUDA Event 延迟、有效显存带宽、相邻版本增量收益和相对朴素基线的累计收益。PyTorch 参考实现只使用 `rtol=0、atol=0` 验证 FP16 数据复制是否逐元素一致，不作为性能加速比的分母。
 
-| Kernel | 相对朴素版本加速比 |
-| --- | ---: |
-| Append | 约 2.5 倍 |
-| Gather | 约 2.1 倍 |
+### 证据边界
 
-优化版本最高有效显存带宽达到约 **165 GB/s**。CUDA 输出与 PyTorch 参考实现执行逐元素比较，FP16 数据复制使用 `rtol=0、atol=0` 验证。
-
-### 端到端收益
-
-将优化算子接入推理数据路径后，在保证输出逐元素一致的前提下，Decode 阶段 TPOT 降低约 **9%**。Nsight Compute 分析表明，端到端收益小于 Kernel 微基准加速比，原因是完整推理链路还包含模型计算、请求调度、同步和其他数据搬运开销。
+- 不使用 PyTorch 与 vLLM 的跨系统差异证明 Kernel 收益。
+- 不把 Kernel 微基准加速比换算成 TTFT、TPOT 或服务吞吐收益。
+- 只有在同一版本 vLLM 中仅替换目标 Kernel 后，才报告自定义 Kernel 的端到端增量。
+- 没有原始样本、环境清单和完整命令支持的数字，不作为项目结论或简历结果。
 
 ## CUDA 算子设计
 
@@ -205,3 +192,4 @@ cd /mnt/d/agent-infer-lab
 
 - [环境记录](docs/environment.md)
 - [Prefix Cache 实验报告](docs/experiments/2026-08-10-prefix-cache.md)
+- [估算性能目标参考（非实测）](docs/experiments/estimated-performance-reference.md)
