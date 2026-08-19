@@ -8,6 +8,8 @@
 
 本实验使用真实本地模型请求，不使用单元测试中的构造时间戳作为性能数据。
 
+归因边界：本报告是同一版本 vLLM 在 Prefix Cache 关闭/开启条件下的系统级消融，只能说明 Prefix Caching 在该配置下的增量影响；它不比较 PyTorch 与 vLLM，也不能证明任何自定义 CUDA Kernel 的性能收益。
+
 ## 2. 实验环境
 
 - GPU：NVIDIA GeForce RTX 4060 Laptop GPU，8188 MiB。
