@@ -1,4 +1,5 @@
 #include <cstdint>
+#include <tuple>
 
 #include <ATen/cuda/CUDAContext.h>
 #include <c10/cuda/CUDAException.h>
@@ -16,7 +17,8 @@ __global__ void resolve_slots_kernel(
     std::int64_t block_size
 ) {
     const std::int64_t index =
-        static_cast<std::int64_t>(blockIdx.x) * blockDim.x
+        static_cast<std::int64_t>(blockIdx.x)
+            * blockDim.x
         + threadIdx.x;
 
     if (index >= num_slots) {
@@ -25,8 +27,10 @@ __global__ void resolve_slots_kernel(
 
     const std::int64_t slot = slots[index];
 
-    locations[index * 2] = slot / block_size;
-    locations[index * 2 + 1] = slot % block_size;
+    locations[index * 2] =
+        slot / block_size;
+    locations[index * 2 + 1] =
+        slot % block_size;
 }
 
 __global__ void append_kv_cache_kernel(
@@ -39,7 +43,8 @@ __global__ void append_kv_cache_kernel(
     std::int64_t values_per_token
 ) {
     const std::int64_t element_index =
-        static_cast<std::int64_t>(blockIdx.x) * blockDim.x
+        static_cast<std::int64_t>(blockIdx.x)
+            * blockDim.x
         + threadIdx.x;
 
     if (element_index >= num_elements) {
@@ -54,10 +59,48 @@ __global__ void append_kv_cache_kernel(
         slot_mapping[token_index];
 
     const std::int64_t cache_index =
-        slot * values_per_token + value_offset;
+        slot * values_per_token
+        + value_offset;
 
-    key_cache[cache_index] = keys[element_index];
-    value_cache[cache_index] = values[element_index];
+    key_cache[cache_index] =
+        keys[element_index];
+    value_cache[cache_index] =
+        values[element_index];
+}
+
+__global__ void gather_kv_cache_kernel(
+    const at::Half* key_cache,
+    const at::Half* value_cache,
+    at::Half* gathered_keys,
+    at::Half* gathered_values,
+    const std::int64_t* slot_mapping,
+    std::int64_t num_elements,
+    std::int64_t values_per_token
+) {
+    const std::int64_t element_index =
+        static_cast<std::int64_t>(blockIdx.x)
+            * blockDim.x
+        + threadIdx.x;
+
+    if (element_index >= num_elements) {
+        return;
+    }
+
+    const std::int64_t token_index =
+        element_index / values_per_token;
+    const std::int64_t value_offset =
+        element_index % values_per_token;
+    const std::int64_t slot =
+        slot_mapping[token_index];
+
+    const std::int64_t cache_index =
+        slot * values_per_token
+        + value_offset;
+
+    gathered_keys[element_index] =
+        key_cache[cache_index];
+    gathered_values[element_index] =
+        value_cache[cache_index];
 }
 
 }  // namespace
@@ -66,24 +109,32 @@ torch::Tensor resolve_slots_cuda(
     torch::Tensor slots,
     std::int64_t block_size
 ) {
-    const c10::cuda::CUDAGuard device_guard(slots.device());
+    const c10::cuda::CUDAGuard device_guard(
+        slots.device()
+    );
 
     torch::Tensor locations = torch::empty(
         {slots.size(0), 2},
         slots.options()
     );
 
-    const std::int64_t num_slots = slots.numel();
+    const std::int64_t num_slots =
+        slots.numel();
 
     if (num_slots == 0) {
         return locations;
     }
 
     constexpr int threads_per_block = 256;
-    const int num_thread_blocks = static_cast<int>(
-        (num_slots + threads_per_block - 1)
-        / threads_per_block
-    );
+    const int num_thread_blocks =
+        static_cast<int>(
+            (
+                num_slots
+                + threads_per_block
+                - 1
+            )
+            / threads_per_block
+        );
 
     const cudaStream_t stream =
         at::cuda::getCurrentCUDAStream(
@@ -114,22 +165,31 @@ void append_kv_cache_cuda(
     torch::Tensor value_cache,
     torch::Tensor slot_mapping
 ) {
-    const c10::cuda::CUDAGuard device_guard(keys.device());
+    const c10::cuda::CUDAGuard device_guard(
+        keys.device()
+    );
 
-    const std::int64_t num_elements = keys.numel();
+    const std::int64_t num_elements =
+        keys.numel();
 
     if (num_elements == 0) {
         return;
     }
 
     const std::int64_t values_per_token =
-        keys.size(1) * keys.size(2);
+        keys.size(1)
+        * keys.size(2);
 
     constexpr int threads_per_block = 256;
-    const int num_thread_blocks = static_cast<int>(
-        (num_elements + threads_per_block - 1)
-        / threads_per_block
-    );
+    const int num_thread_blocks =
+        static_cast<int>(
+            (
+                num_elements
+                + threads_per_block
+                - 1
+            )
+            / threads_per_block
+        );
 
     const cudaStream_t stream =
         at::cuda::getCurrentCUDAStream(
@@ -152,4 +212,87 @@ void append_kv_cache_cuda(
     );
 
     C10_CUDA_KERNEL_LAUNCH_CHECK();
+}
+
+std::tuple<torch::Tensor, torch::Tensor>
+gather_kv_cache_cuda(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    const c10::cuda::CUDAGuard device_guard(
+        key_cache.device()
+    );
+
+    torch::Tensor gathered_keys =
+        torch::empty(
+            {
+                slot_mapping.size(0),
+                key_cache.size(2),
+                key_cache.size(3),
+            },
+            key_cache.options()
+        );
+
+    torch::Tensor gathered_values =
+        torch::empty(
+            {
+                slot_mapping.size(0),
+                value_cache.size(2),
+                value_cache.size(3),
+            },
+            value_cache.options()
+        );
+
+    const std::int64_t num_elements =
+        gathered_keys.numel();
+
+    if (num_elements == 0) {
+        return std::make_tuple(
+            gathered_keys,
+            gathered_values
+        );
+    }
+
+    const std::int64_t values_per_token =
+        key_cache.size(2)
+        * key_cache.size(3);
+
+    constexpr int threads_per_block = 256;
+    const int num_thread_blocks =
+        static_cast<int>(
+            (
+                num_elements
+                + threads_per_block
+                - 1
+            )
+            / threads_per_block
+        );
+
+    const cudaStream_t stream =
+        at::cuda::getCurrentCUDAStream(
+            key_cache.get_device()
+        ).stream();
+
+    gather_kv_cache_kernel<<<
+        num_thread_blocks,
+        threads_per_block,
+        0,
+        stream
+    >>>(
+        key_cache.data_ptr<at::Half>(),
+        value_cache.data_ptr<at::Half>(),
+        gathered_keys.data_ptr<at::Half>(),
+        gathered_values.data_ptr<at::Half>(),
+        slot_mapping.data_ptr<std::int64_t>(),
+        num_elements,
+        values_per_token
+    );
+
+    C10_CUDA_KERNEL_LAUNCH_CHECK();
+
+    return std::make_tuple(
+        gathered_keys,
+        gathered_values
+    );
 }
