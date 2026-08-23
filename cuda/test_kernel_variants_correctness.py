@@ -1,4 +1,4 @@
-"""Compare V0 and current CUDA kernels with PyTorch references."""
+"""Compare versioned CUDA kernels with PyTorch references."""
 
 import torch
 from load_extension import load_kv_cache_extension
@@ -75,22 +75,22 @@ def run_case(
         append_slot_mapping,
     )
 
-    current_key_cache = initial_key_cache.clone()
-    current_value_cache = (
+    v1_key_cache = initial_key_cache.clone()
+    v1_value_cache = (
         initial_value_cache.clone()
     )
 
-    extension.append_kv_cache_(
+    extension.append_kv_cache_v1_(
         keys,
         values,
-        current_key_cache,
-        current_value_cache,
+        v1_key_cache,
+        v1_value_cache,
         append_slot_mapping,
     )
 
     for actual_key_cache in (
         v0_key_cache,
-        current_key_cache,
+        v1_key_cache,
     ):
         torch.testing.assert_close(
             actual_key_cache,
@@ -101,7 +101,7 @@ def run_case(
 
     for actual_value_cache in (
         v0_value_cache,
-        current_value_cache,
+        v1_value_cache,
     ):
         torch.testing.assert_close(
             actual_value_cache,
@@ -139,8 +139,8 @@ def run_case(
         )
     )
 
-    current_keys, current_values = (
-        extension.gather_kv_cache(
+    v1_keys, v1_values = (
+        extension.gather_kv_cache_v1(
             expected_key_cache,
             expected_value_cache,
             gather_slot_mapping,
@@ -149,7 +149,7 @@ def run_case(
 
     for actual_keys in (
         v0_keys,
-        current_keys,
+        v1_keys,
     ):
         torch.testing.assert_close(
             actual_keys,
@@ -160,7 +160,7 @@ def run_case(
 
     for actual_values in (
         v0_values,
-        current_values,
+        v1_values,
     ):
         torch.testing.assert_close(
             actual_values,
@@ -171,13 +171,13 @@ def run_case(
 
     torch.testing.assert_close(
         v0_keys,
-        current_keys,
+        v1_keys,
         rtol=0,
         atol=0,
     )
     torch.testing.assert_close(
         v0_values,
-        current_values,
+        v1_values,
         rtol=0,
         atol=0,
     )
@@ -262,8 +262,8 @@ def main() -> None:
 
     torch.cuda.synchronize()
 
-    print("V0 CUDA KV cache correctness tests passed")
-    print("implementations: PyTorch, V0, current")
+    print("Versioned CUDA KV cache correctness tests passed")
+    print("implementations: PyTorch, V0, V1")
     print("shapes: main, odd-sized, empty")
     print("Append: unique slots")
     print("Gather: reordered and duplicate slots")

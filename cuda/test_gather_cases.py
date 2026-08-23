@@ -54,7 +54,7 @@ def check_valid_case(
     )
 
     actual_keys, actual_values = (
-        extension.gather_kv_cache(
+        extension.gather_kv_cache_v1(
             key_cache,
             value_cache,
             slot_mapping,
@@ -167,7 +167,7 @@ def main() -> None:
     expect_runtime_error(
         "negative slot",
         "slots must be in",
-        lambda: extension.gather_kv_cache(
+        lambda: extension.gather_kv_cache_v1(
             key_cache,
             value_cache,
             negative_slot,
@@ -182,7 +182,7 @@ def main() -> None:
     expect_runtime_error(
         "out-of-range slot",
         "slots must be in",
-        lambda: extension.gather_kv_cache(
+        lambda: extension.gather_kv_cache_v1(
             key_cache,
             value_cache,
             out_of_range_slot,
@@ -197,7 +197,7 @@ def main() -> None:
     expect_runtime_error(
         "wrong slot dtype",
         "slot_mapping must use torch.int64",
-        lambda: extension.gather_kv_cache(
+        lambda: extension.gather_kv_cache_v1(
             key_cache,
             value_cache,
             int32_slots,
@@ -211,7 +211,7 @@ def main() -> None:
     expect_runtime_error(
         "wrong slot shape",
         "slot_mapping must be one-dimensional",
-        lambda: extension.gather_kv_cache(
+        lambda: extension.gather_kv_cache_v1(
             key_cache,
             value_cache,
             two_dimensional_slots,
@@ -224,7 +224,7 @@ def main() -> None:
     expect_runtime_error(
         "wrong Key cache dtype",
         "caches must use torch.float16",
-        lambda: extension.gather_kv_cache(
+        lambda: extension.gather_kv_cache_v1(
             float32_key_cache,
             value_cache,
             valid_slots,
@@ -240,7 +240,7 @@ def main() -> None:
     expect_runtime_error(
         "wrong Value cache shape",
         "value_cache must have the same shape as key_cache",
-        lambda: extension.gather_kv_cache(
+        lambda: extension.gather_kv_cache_v1(
             key_cache,
             wrong_value_cache,
             valid_slots,
@@ -259,7 +259,7 @@ def main() -> None:
     expect_runtime_error(
         "non-contiguous Key cache",
         "key_cache must be contiguous",
-        lambda: extension.gather_kv_cache(
+        lambda: extension.gather_kv_cache_v1(
             noncontiguous_key_cache,
             value_cache,
             valid_slots,
@@ -274,7 +274,7 @@ def main() -> None:
     expect_runtime_error(
         "CPU slot mapping",
         "slot_mapping must be a CUDA tensor",
-        lambda: extension.gather_kv_cache(
+        lambda: extension.gather_kv_cache_v1(
             key_cache,
             value_cache,
             cpu_slots,

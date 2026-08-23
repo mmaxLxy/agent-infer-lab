@@ -15,8 +15,14 @@ def load_kv_cache_extension(*, verbose: bool = True):
         name="agent_infer_lab_kv_cache_cuda",
         sources=[
             str(_CUDA_DIRECTORY / "kv_cache_ops.cpp"),
-            str(_CUDA_DIRECTORY / "kv_cache_kernels.cu"),
-            str(_CUDA_DIRECTORY / "kv_cache_v0_kernels.cu"),
+            str(
+                _CUDA_DIRECTORY
+                / "kv_cache_v1_kernels.cu"
+            ),
+            str(
+                _CUDA_DIRECTORY
+                / "kv_cache_v0_kernels.cu"
+            ),
         ],
         extra_cflags=["-O2"],
         extra_cuda_cflags=["-O2"],

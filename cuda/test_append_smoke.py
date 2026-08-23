@@ -1,4 +1,4 @@
-"""Validate the naive CUDA paged KV cache Append kernel."""
+"""Validate the V1 CUDA paged KV cache Append kernel."""
 
 import torch
 from load_extension import load_kv_cache_extension
@@ -69,7 +69,7 @@ def main() -> None:
     actual_key_cache = initial_key_cache.clone()
     actual_value_cache = initial_value_cache.clone()
 
-    extension.append_kv_cache_(
+    extension.append_kv_cache_v1_(
         keys,
         values,
         actual_key_cache,
@@ -90,7 +90,7 @@ def main() -> None:
         atol=0,
     )
 
-    print("Naive CUDA KV cache Append test passed")
+    print("V1 CUDA KV cache Append test passed")
     print("cache shape:", list(cache_shape))
     print("slot mapping:", slot_mapping.cpu().tolist())
     print(

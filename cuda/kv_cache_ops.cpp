@@ -8,21 +8,6 @@ torch::Tensor resolve_slots_cuda(
     std::int64_t block_size
 );
 
-void append_kv_cache_cuda(
-    torch::Tensor keys,
-    torch::Tensor values,
-    torch::Tensor key_cache,
-    torch::Tensor value_cache,
-    torch::Tensor slot_mapping
-);
-
-std::tuple<torch::Tensor, torch::Tensor>
-gather_kv_cache_cuda(
-    torch::Tensor key_cache,
-    torch::Tensor value_cache,
-    torch::Tensor slot_mapping
-);
-
 void append_kv_cache_v0_cuda(
     torch::Tensor keys,
     torch::Tensor values,
@@ -33,6 +18,21 @@ void append_kv_cache_v0_cuda(
 
 std::tuple<torch::Tensor, torch::Tensor>
 gather_kv_cache_v0_cuda(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+);
+
+void append_kv_cache_v1_cuda(
+    torch::Tensor keys,
+    torch::Tensor values,
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+);
+
+std::tuple<torch::Tensor, torch::Tensor>
+gather_kv_cache_v1_cuda(
     torch::Tensor key_cache,
     torch::Tensor value_cache,
     torch::Tensor slot_mapping
@@ -328,49 +328,6 @@ torch::Tensor resolve_slots(
     );
 }
 
-void append_kv_cache(
-    torch::Tensor keys,
-    torch::Tensor values,
-    torch::Tensor key_cache,
-    torch::Tensor value_cache,
-    torch::Tensor slot_mapping
-) {
-    check_append_inputs(
-        keys,
-        values,
-        key_cache,
-        value_cache,
-        slot_mapping
-    );
-
-    append_kv_cache_cuda(
-        keys,
-        values,
-        key_cache,
-        value_cache,
-        slot_mapping
-    );
-}
-
-std::tuple<torch::Tensor, torch::Tensor>
-gather_kv_cache(
-    torch::Tensor key_cache,
-    torch::Tensor value_cache,
-    torch::Tensor slot_mapping
-) {
-    check_gather_inputs(
-        key_cache,
-        value_cache,
-        slot_mapping
-    );
-
-    return gather_kv_cache_cuda(
-        key_cache,
-        value_cache,
-        slot_mapping
-    );
-}
-
 void append_kv_cache_v0(
     torch::Tensor keys,
     torch::Tensor values,
@@ -414,6 +371,49 @@ gather_kv_cache_v0(
     );
 }
 
+void append_kv_cache_v1(
+    torch::Tensor keys,
+    torch::Tensor values,
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    check_append_inputs(
+        keys,
+        values,
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+
+    append_kv_cache_v1_cuda(
+        keys,
+        values,
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+}
+
+std::tuple<torch::Tensor, torch::Tensor>
+gather_kv_cache_v1(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    check_gather_inputs(
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+
+    return gather_kv_cache_v1_cuda(
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+}
+
 PYBIND11_MODULE(
     TORCH_EXTENSION_NAME,
     module
@@ -423,18 +423,6 @@ PYBIND11_MODULE(
         &resolve_slots,
         "Resolve linear KV cache slots "
         "on CUDA"
-    );
-    module.def(
-        "append_kv_cache_",
-        &append_kv_cache,
-        "Append Key and Value tensors "
-        "into a paged KV cache"
-    );
-    module.def(
-        "gather_kv_cache",
-        &gather_kv_cache,
-        "Gather Key and Value tensors "
-        "from a paged KV cache"
     );
     module.def(
         "append_kv_cache_v0_",
@@ -447,5 +435,17 @@ PYBIND11_MODULE(
         &gather_kv_cache_v0,
         "Gather Key and Value tensors "
         "with the V0 scalar-per-token kernel"
+    );
+    module.def(
+        "append_kv_cache_v1_",
+        &append_kv_cache_v1,
+        "Append Key and Value tensors "
+        "with the V1 flat-element kernel"
+    );
+    module.def(
+        "gather_kv_cache_v1",
+        &gather_kv_cache_v1,
+        "Gather Key and Value tensors "
+        "with the V1 flat-element kernel"
     );
 }

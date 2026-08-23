@@ -48,7 +48,7 @@ def main() -> None:
         slot_mapping,
     )
 
-    actual_keys, actual_values = extension.gather_kv_cache(
+    actual_keys, actual_values = extension.gather_kv_cache_v1(
         key_cache,
         value_cache,
         slot_mapping,

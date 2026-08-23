@@ -98,7 +98,7 @@ def check_valid_case(
         initial_value_cache.clone()
     )
 
-    extension.append_kv_cache_(
+    extension.append_kv_cache_v1_(
         keys,
         values,
         actual_key_cache,
@@ -171,7 +171,7 @@ def main() -> None:
     expect_runtime_error(
         "duplicate slots",
         "slot_mapping must contain unique slots",
-        lambda: extension.append_kv_cache_(
+        lambda: extension.append_kv_cache_v1_(
             keys,
             values,
             key_cache,
@@ -188,7 +188,7 @@ def main() -> None:
     expect_runtime_error(
         "negative slot",
         "slots must be in",
-        lambda: extension.append_kv_cache_(
+        lambda: extension.append_kv_cache_v1_(
             keys,
             values,
             key_cache,
@@ -205,7 +205,7 @@ def main() -> None:
     expect_runtime_error(
         "out-of-range slot",
         "slots must be in",
-        lambda: extension.append_kv_cache_(
+        lambda: extension.append_kv_cache_v1_(
             keys,
             values,
             key_cache,
@@ -222,7 +222,7 @@ def main() -> None:
     expect_runtime_error(
         "wrong slot dtype",
         "slot_mapping must use torch.int64",
-        lambda: extension.append_kv_cache_(
+        lambda: extension.append_kv_cache_v1_(
             keys,
             values,
             key_cache,
@@ -235,7 +235,7 @@ def main() -> None:
     expect_runtime_error(
         "wrong Key dtype",
         "keys and caches must use torch.float16",
-        lambda: extension.append_kv_cache_(
+        lambda: extension.append_kv_cache_v1_(
             float32_keys,
             values,
             key_cache,
@@ -252,7 +252,7 @@ def main() -> None:
     expect_runtime_error(
         "wrong Value shape",
         "values must have the same shape as keys",
-        lambda: extension.append_kv_cache_(
+        lambda: extension.append_kv_cache_v1_(
             keys,
             wrong_values,
             key_cache,
@@ -276,7 +276,7 @@ def main() -> None:
     expect_runtime_error(
         "non-contiguous Keys",
         "keys must be contiguous",
-        lambda: extension.append_kv_cache_(
+        lambda: extension.append_kv_cache_v1_(
             noncontiguous_keys,
             values,
             key_cache,
@@ -297,7 +297,7 @@ def main() -> None:
     expect_runtime_error(
         "CPU slot mapping",
         "slot_mapping must be a CUDA tensor",
-        lambda: extension.append_kv_cache_(
+        lambda: extension.append_kv_cache_v1_(
             keys,
             values,
             key_cache,

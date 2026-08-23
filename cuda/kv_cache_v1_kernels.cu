@@ -33,7 +33,7 @@ __global__ void resolve_slots_kernel(
         slot % block_size;
 }
 
-__global__ void append_kv_cache_kernel(
+__global__ void append_kv_cache_v1_kernel(
     const at::Half* keys,
     const at::Half* values,
     at::Half* key_cache,
@@ -68,7 +68,7 @@ __global__ void append_kv_cache_kernel(
         values[element_index];
 }
 
-__global__ void gather_kv_cache_kernel(
+__global__ void gather_kv_cache_v1_kernel(
     const at::Half* key_cache,
     const at::Half* value_cache,
     at::Half* gathered_keys,
@@ -126,6 +126,7 @@ torch::Tensor resolve_slots_cuda(
     }
 
     constexpr int threads_per_block = 256;
+
     const int num_thread_blocks =
         static_cast<int>(
             (
@@ -158,7 +159,7 @@ torch::Tensor resolve_slots_cuda(
     return locations;
 }
 
-void append_kv_cache_cuda(
+void append_kv_cache_v1_cuda(
     torch::Tensor keys,
     torch::Tensor values,
     torch::Tensor key_cache,
@@ -181,6 +182,7 @@ void append_kv_cache_cuda(
         * keys.size(2);
 
     constexpr int threads_per_block = 256;
+
     const int num_thread_blocks =
         static_cast<int>(
             (
@@ -196,7 +198,7 @@ void append_kv_cache_cuda(
             keys.get_device()
         ).stream();
 
-    append_kv_cache_kernel<<<
+    append_kv_cache_v1_kernel<<<
         num_thread_blocks,
         threads_per_block,
         0,
@@ -215,7 +217,7 @@ void append_kv_cache_cuda(
 }
 
 std::tuple<torch::Tensor, torch::Tensor>
-gather_kv_cache_cuda(
+gather_kv_cache_v1_cuda(
     torch::Tensor key_cache,
     torch::Tensor value_cache,
     torch::Tensor slot_mapping
@@ -259,6 +261,7 @@ gather_kv_cache_cuda(
         * key_cache.size(3);
 
     constexpr int threads_per_block = 256;
+
     const int num_thread_blocks =
         static_cast<int>(
             (
@@ -274,7 +277,7 @@ gather_kv_cache_cuda(
             key_cache.get_device()
         ).stream();
 
-    gather_kv_cache_kernel<<<
+    gather_kv_cache_v1_kernel<<<
         num_thread_blocks,
         threads_per_block,
         0,
