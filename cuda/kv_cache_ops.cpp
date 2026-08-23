@@ -23,6 +23,21 @@ gather_kv_cache_cuda(
     torch::Tensor slot_mapping
 );
 
+void append_kv_cache_v0_cuda(
+    torch::Tensor keys,
+    torch::Tensor values,
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+);
+
+std::tuple<torch::Tensor, torch::Tensor>
+gather_kv_cache_v0_cuda(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+);
+
 namespace {
 
 void check_cuda_contiguous(
@@ -109,39 +124,12 @@ void check_slot_bounds(
     );
 }
 
-}  // namespace
-
-torch::Tensor resolve_slots(
-    torch::Tensor slots,
-    std::int64_t block_size
-) {
-    check_cuda_contiguous(slots, "slots");
-
-    TORCH_CHECK(
-        slots.scalar_type() == at::kLong,
-        "slots must use torch.int64"
-    );
-    TORCH_CHECK(
-        slots.dim() == 1,
-        "slots must be a one-dimensional tensor"
-    );
-    TORCH_CHECK(
-        block_size > 0,
-        "block_size must be positive"
-    );
-
-    return resolve_slots_cuda(
-        slots,
-        block_size
-    );
-}
-
-void append_kv_cache(
-    torch::Tensor keys,
-    torch::Tensor values,
-    torch::Tensor key_cache,
-    torch::Tensor value_cache,
-    torch::Tensor slot_mapping
+void check_append_inputs(
+    const torch::Tensor& keys,
+    const torch::Tensor& values,
+    const torch::Tensor& key_cache,
+    const torch::Tensor& value_cache,
+    const torch::Tensor& slot_mapping
 ) {
     check_cuda_contiguous(keys, "keys");
     check_cuda_contiguous(values, "values");
@@ -241,21 +229,12 @@ void append_kv_cache(
     if (slot_mapping.numel() > 0) {
         check_unique_slots(slot_mapping);
     }
-
-    append_kv_cache_cuda(
-        keys,
-        values,
-        key_cache,
-        value_cache,
-        slot_mapping
-    );
 }
 
-std::tuple<torch::Tensor, torch::Tensor>
-gather_kv_cache(
-    torch::Tensor key_cache,
-    torch::Tensor value_cache,
-    torch::Tensor slot_mapping
+void check_gather_inputs(
+    const torch::Tensor& key_cache,
+    const torch::Tensor& value_cache,
+    const torch::Tensor& slot_mapping
 ) {
     check_cuda_contiguous(
         key_cache,
@@ -320,8 +299,115 @@ gather_kv_cache(
         slot_mapping,
         capacity_tokens
     );
+}
+
+}  // namespace
+
+torch::Tensor resolve_slots(
+    torch::Tensor slots,
+    std::int64_t block_size
+) {
+    check_cuda_contiguous(slots, "slots");
+
+    TORCH_CHECK(
+        slots.scalar_type() == at::kLong,
+        "slots must use torch.int64"
+    );
+    TORCH_CHECK(
+        slots.dim() == 1,
+        "slots must be a one-dimensional tensor"
+    );
+    TORCH_CHECK(
+        block_size > 0,
+        "block_size must be positive"
+    );
+
+    return resolve_slots_cuda(
+        slots,
+        block_size
+    );
+}
+
+void append_kv_cache(
+    torch::Tensor keys,
+    torch::Tensor values,
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    check_append_inputs(
+        keys,
+        values,
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+
+    append_kv_cache_cuda(
+        keys,
+        values,
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+}
+
+std::tuple<torch::Tensor, torch::Tensor>
+gather_kv_cache(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    check_gather_inputs(
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
 
     return gather_kv_cache_cuda(
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+}
+
+void append_kv_cache_v0(
+    torch::Tensor keys,
+    torch::Tensor values,
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    check_append_inputs(
+        keys,
+        values,
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+
+    append_kv_cache_v0_cuda(
+        keys,
+        values,
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+}
+
+std::tuple<torch::Tensor, torch::Tensor>
+gather_kv_cache_v0(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    check_gather_inputs(
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+
+    return gather_kv_cache_v0_cuda(
         key_cache,
         value_cache,
         slot_mapping
@@ -349,5 +435,17 @@ PYBIND11_MODULE(
         &gather_kv_cache,
         "Gather Key and Value tensors "
         "from a paged KV cache"
+    );
+    module.def(
+        "append_kv_cache_v0_",
+        &append_kv_cache_v0,
+        "Append Key and Value tensors "
+        "with the V0 scalar-per-token kernel"
+    );
+    module.def(
+        "gather_kv_cache_v0",
+        &gather_kv_cache_v0,
+        "Gather Key and Value tensors "
+        "with the V0 scalar-per-token kernel"
     );
 }
