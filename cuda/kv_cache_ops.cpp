@@ -23,6 +23,14 @@ gather_kv_cache_v0_cuda(
     torch::Tensor slot_mapping
 );
 
+void gather_kv_cache_v0_out_cuda(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping,
+    torch::Tensor gathered_keys,
+    torch::Tensor gathered_values
+);
+
 void append_kv_cache_v1_cuda(
     torch::Tensor keys,
     torch::Tensor values,
@@ -36,6 +44,14 @@ gather_kv_cache_v1_cuda(
     torch::Tensor key_cache,
     torch::Tensor value_cache,
     torch::Tensor slot_mapping
+);
+
+void gather_kv_cache_v1_out_cuda(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping,
+    torch::Tensor gathered_keys,
+    torch::Tensor gathered_values
 );
 
 namespace {
@@ -424,28 +440,48 @@ PYBIND11_MODULE(
         "Resolve linear KV cache slots "
         "on CUDA"
     );
+
     module.def(
         "append_kv_cache_v0_",
         &append_kv_cache_v0,
-        "Append Key and Value tensors "
-        "with the V0 scalar-per-token kernel"
+        "Checked V0 scalar-per-token Append"
     );
     module.def(
         "gather_kv_cache_v0",
         &gather_kv_cache_v0,
-        "Gather Key and Value tensors "
-        "with the V0 scalar-per-token kernel"
+        "Checked V0 scalar-per-token Gather"
     );
     module.def(
         "append_kv_cache_v1_",
         &append_kv_cache_v1,
-        "Append Key and Value tensors "
-        "with the V1 flat-element kernel"
+        "Checked V1 flat-element Append"
     );
     module.def(
         "gather_kv_cache_v1",
         &gather_kv_cache_v1,
-        "Gather Key and Value tensors "
-        "with the V1 flat-element kernel"
+        "Checked V1 flat-element Gather"
+    );
+
+    module.def(
+        "append_kv_cache_v0_unchecked_",
+        &append_kv_cache_v0_cuda,
+        "Unchecked V0 Append for benchmarks"
+    );
+    module.def(
+        "gather_kv_cache_v0_unchecked_out_",
+        &gather_kv_cache_v0_out_cuda,
+        "Unchecked V0 Gather into "
+        "preallocated outputs"
+    );
+    module.def(
+        "append_kv_cache_v1_unchecked_",
+        &append_kv_cache_v1_cuda,
+        "Unchecked V1 Append for benchmarks"
+    );
+    module.def(
+        "gather_kv_cache_v1_unchecked_out_",
+        &gather_kv_cache_v1_out_cuda,
+        "Unchecked V1 Gather into "
+        "preallocated outputs"
     );
 }

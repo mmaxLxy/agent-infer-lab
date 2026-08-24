@@ -155,44 +155,22 @@ void append_kv_cache_v0_cuda(
     C10_CUDA_KERNEL_LAUNCH_CHECK();
 }
 
-std::tuple<torch::Tensor, torch::Tensor>
-gather_kv_cache_v0_cuda(
+void gather_kv_cache_v0_out_cuda(
     torch::Tensor key_cache,
     torch::Tensor value_cache,
-    torch::Tensor slot_mapping
+    torch::Tensor slot_mapping,
+    torch::Tensor gathered_keys,
+    torch::Tensor gathered_values
 ) {
     const c10::cuda::CUDAGuard device_guard(
         key_cache.device()
     );
 
-    torch::Tensor gathered_keys =
-        torch::empty(
-            {
-                slot_mapping.size(0),
-                key_cache.size(2),
-                key_cache.size(3),
-            },
-            key_cache.options()
-        );
-
-    torch::Tensor gathered_values =
-        torch::empty(
-            {
-                slot_mapping.size(0),
-                value_cache.size(2),
-                value_cache.size(3),
-            },
-            value_cache.options()
-        );
-
     const std::int64_t num_tokens =
         slot_mapping.size(0);
 
     if (num_tokens == 0) {
-        return std::make_tuple(
-            gathered_keys,
-            gathered_values
-        );
+        return;
     }
 
     const std::int64_t values_per_token =
@@ -232,6 +210,41 @@ gather_kv_cache_v0_cuda(
     );
 
     C10_CUDA_KERNEL_LAUNCH_CHECK();
+}
+
+std::tuple<torch::Tensor, torch::Tensor>
+gather_kv_cache_v0_cuda(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    torch::Tensor gathered_keys =
+        torch::empty(
+            {
+                slot_mapping.size(0),
+                key_cache.size(2),
+                key_cache.size(3),
+            },
+            key_cache.options()
+        );
+
+    torch::Tensor gathered_values =
+        torch::empty(
+            {
+                slot_mapping.size(0),
+                value_cache.size(2),
+                value_cache.size(3),
+            },
+            value_cache.options()
+        );
+
+    gather_kv_cache_v0_out_cuda(
+        key_cache,
+        value_cache,
+        slot_mapping,
+        gathered_keys,
+        gathered_values
+    );
 
     return std::make_tuple(
         gathered_keys,
