@@ -135,6 +135,9 @@ def command_output(
     if error_output:
         return error_output
 
+    if completed.returncode == 0:
+        return ""
+
     return f"exit_code={completed.returncode}"
 
 
