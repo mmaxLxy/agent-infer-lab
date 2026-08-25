@@ -18,6 +18,8 @@ models/
 artifacts/
 results/*
 !results/.gitkeep
+!results/kernel_benchmarks/
+!results/kernel_benchmarks/*.json
 *.safetensors
 *.pth
 *.pt
