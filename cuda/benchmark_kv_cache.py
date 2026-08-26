@@ -15,7 +15,45 @@ from typing import Any
 import torch
 from load_extension import load_kv_cache_extension
 
-_VERSIONS = ("v0", "v1")
+_VERSIONS = ("v0", "v1", "v2")
+_VERSION_ORDERS = (
+    ("v0", "v1", "v2"),
+    ("v1", "v2", "v0"),
+    ("v2", "v0", "v1"),
+    ("v2", "v1", "v0"),
+    ("v1", "v0", "v2"),
+    ("v0", "v2", "v1"),
+)
+_VARIANT_DEFINITIONS = {
+    "v0": (
+        "Scalar-per-token baseline: one thread loops "
+        "over all Key and Value elements for one token."
+    ),
+    "v1": (
+        "Flat-element coalesced implementation: adjacent "
+        "threads process adjacent elements of one token."
+    ),
+    "v2": (
+        "Vectorized chunk implementation: one thread "
+        "moves eight contiguous FP16 values as one "
+        "16-byte uint4 vector when alignment permits."
+    ),
+}
+_COMPARISON_INTERPRETATIONS = {
+    "v1_vs_v0": (
+        "Combined benefit of fine-grained thread "
+        "parallelism and coalesced access mapping."
+    ),
+    "v2_vs_v1": (
+        "Combined benefit of 16-byte vector chunking, "
+        "reduced thread count, address calculations, "
+        "and memory instructions."
+    ),
+    "v2_vs_v0": (
+        "Cumulative benefit from the scalar-per-token "
+        "baseline to the V2 vectorized implementation."
+    ),
+}
 _PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -35,7 +73,7 @@ def parse_args() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(
         description=(
-            "Benchmark V0 and V1 paged KV cache "
+            "Benchmark V0, V1, and V2 paged KV cache "
             "CUDA kernels with CUDA Events."
         )
     )
@@ -301,6 +339,10 @@ def build_functions(
                 extension
                 .append_kv_cache_v1_unchecked_
             ),
+            "v2": (
+                extension
+                .append_kv_cache_v2_unchecked_
+            ),
         },
         "gather": {
             "v0": (
@@ -310,6 +352,10 @@ def build_functions(
             "v1": (
                 extension
                 .gather_kv_cache_v1_unchecked_out_
+            ),
+            "v2": (
+                extension
+                .gather_kv_cache_v2_unchecked_out_
             ),
         },
     }
@@ -339,12 +385,14 @@ def operation_arguments(
     )
 
 
-def version_order(index: int) -> tuple[str, str]:
-    """Alternate order to balance first-run effects."""
+def version_order(
+    index: int,
+) -> tuple[str, ...]:
+    """Rotate all version orders to balance position effects."""
 
-    if index % 2 == 0:
-        return ("v0", "v1")
-    return ("v1", "v0")
+    return _VERSION_ORDERS[
+        index % len(_VERSION_ORDERS)
+    ]
 
 
 def warm_up(
@@ -354,7 +402,7 @@ def warm_up(
     banks: list[dict[str, torch.Tensor]],
     warmup: int,
 ) -> None:
-    """Warm up both variants before recording samples."""
+    """Warm up all variants before recording samples."""
 
     for index in range(warmup):
         bank = banks[index % len(banks)]
@@ -434,6 +482,39 @@ def summarize_samples(
     }
 
 
+def compare_versions(
+    summaries: dict[str, dict[str, Any]],
+    *,
+    baseline: str,
+    candidate: str,
+    interpretation: str,
+) -> dict[str, Any]:
+    """Compare one candidate with one baseline at P50."""
+
+    baseline_p50 = summaries[
+        baseline
+    ]["p50_ms"]
+    candidate_p50 = summaries[
+        candidate
+    ]["p50_ms"]
+
+    return {
+        "baseline": baseline,
+        "candidate": candidate,
+        "interpretation": interpretation,
+        "p50_speedup": (
+            baseline_p50 / candidate_p50
+        ),
+        "p50_latency_reduction_percent": (
+            (
+                1.0
+                - candidate_p50 / baseline_p50
+            )
+            * 100.0
+        ),
+    }
+
+
 def measure_operation(
     *,
     operation: str,
@@ -443,7 +524,7 @@ def measure_operation(
     repeats: int,
     useful_bytes: int,
 ) -> dict[str, Any]:
-    """Measure V0 and V1 using interleaved CUDA Events."""
+    """Measure V0, V1, and V2 with interleaved CUDA Events."""
 
     warm_up(
         operation=operation,
@@ -493,8 +574,8 @@ def measure_operation(
         str,
         list[dict[str, Any]],
     ] = {
-        "v0": [],
-        "v1": [],
+        version: []
+        for version in _VERSIONS
     }
 
     for record in event_records:
@@ -534,23 +615,45 @@ def measure_operation(
         for version in _VERSIONS
     }
 
-    v0_p50 = summaries["v0"]["p50_ms"]
-    v1_p50 = summaries["v1"]["p50_ms"]
+    comparisons = {
+        "v1_vs_v0": compare_versions(
+            summaries,
+            baseline="v0",
+            candidate="v1",
+            interpretation=(
+                _COMPARISON_INTERPRETATIONS[
+                    "v1_vs_v0"
+                ]
+            ),
+        ),
+        "v2_vs_v1": compare_versions(
+            summaries,
+            baseline="v1",
+            candidate="v2",
+            interpretation=(
+                _COMPARISON_INTERPRETATIONS[
+                    "v2_vs_v1"
+                ]
+            ),
+        ),
+        "v2_vs_v0": compare_versions(
+            summaries,
+            baseline="v0",
+            candidate="v2",
+            interpretation=(
+                _COMPARISON_INTERPRETATIONS[
+                    "v2_vs_v0"
+                ]
+            ),
+        ),
+    }
 
     return {
         "operation": operation,
         "useful_bytes_per_call": useful_bytes,
         "samples": samples_by_version,
         "summary": summaries,
-        "v1_vs_v0": {
-            "p50_speedup": (
-                v0_p50 / v1_p50
-            ),
-            "p50_latency_reduction_percent": (
-                (1.0 - v1_p50 / v0_p50)
-                * 100.0
-            ),
-        },
+        "comparisons": comparisons,
     }
 
 
@@ -572,7 +675,10 @@ def resolve_output_path(
         _PROJECT_ROOT
         / "results"
         / "kernel_benchmarks"
-        / f"kv_cache_v0_v1_{timestamp}.json"
+        / (
+            "kv_cache_v0_v1_v2_"
+            f"{timestamp}.json"
+        )
     )
 
 
@@ -595,15 +701,32 @@ def print_result(
             f"{summary['effective_bandwidth_gbps_at_p50']:.3f} GB/s"
         )
 
-    comparison = result["v1_vs_v0"]
-    print(
-        "  V1/V0 p50 speedup: "
-        f"{comparison['p50_speedup']:.3f}x"
-    )
-    print(
-        "  V1 p50 latency reduction: "
-        f"{comparison['p50_latency_reduction_percent']:.2f}%"
-    )
+    for comparison_name in (
+        "v1_vs_v0",
+        "v2_vs_v1",
+        "v2_vs_v0",
+    ):
+        comparison = result[
+            "comparisons"
+        ][comparison_name]
+
+        baseline = comparison[
+            "baseline"
+        ].upper()
+        candidate = comparison[
+            "candidate"
+        ].upper()
+
+        print(
+            f"  {candidate}/{baseline} "
+            "p50 speedup: "
+            f"{comparison['p50_speedup']:.3f}x"
+        )
+        print(
+            f"  {candidate} p50 latency "
+            "reduction: "
+            f"{comparison['p50_latency_reduction_percent']:.2f}%"
+        )
 
 
 def main() -> None:
@@ -668,7 +791,7 @@ def main() -> None:
     )
 
     payload = {
-        "schema_version": 1,
+        "schema_version": 2,
         "created_at_utc": datetime.now(
             UTC
         ).isoformat(),
@@ -682,9 +805,20 @@ def main() -> None:
             "read and written per call; "
             "metadata traffic is excluded"
         ),
+        "variant_definitions": (
+            _VARIANT_DEFINITIONS
+        ),
+        "comparison_interpretations": (
+            _COMPARISON_INTERPRETATIONS
+        ),
         "command": [sys.executable, *sys.argv],
         "configuration": {
             "operation": args.operation,
+            "versions": list(_VERSIONS),
+            "version_orders": [
+                list(order)
+                for order in _VERSION_ORDERS
+            ],
             "num_tokens": args.num_tokens,
             "num_blocks": args.num_blocks,
             "block_size": args.block_size,
