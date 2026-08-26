@@ -66,7 +66,7 @@ def run_case(
         append_slot_mapping,
     )
 
-    for version in ("v0", "v1"):
+    for version in ("v0", "v1", "v2"):
         actual_key_cache = initial_key_cache.clone()
         actual_value_cache = (
             initial_value_cache.clone()
@@ -124,7 +124,7 @@ def run_case(
         head_dim,
     )
 
-    for version in ("v0", "v1"):
+    for version in ("v0", "v1", "v2"):
         actual_keys = torch.empty(
             output_shape,
             dtype=torch.float16,
@@ -268,7 +268,7 @@ def main() -> None:
         "correctness tests passed"
     )
     print(
-        "implementations: PyTorch, V0, V1"
+        "implementations: PyTorch, V0, V1, V2"
     )
     print(
         "interfaces: unchecked Append, "

@@ -88,9 +88,23 @@ def run_case(
         append_slot_mapping,
     )
 
+    v2_key_cache = initial_key_cache.clone()
+    v2_value_cache = (
+        initial_value_cache.clone()
+    )
+
+    extension.append_kv_cache_v2_(
+        keys,
+        values,
+        v2_key_cache,
+        v2_value_cache,
+        append_slot_mapping,
+    )
+
     for actual_key_cache in (
         v0_key_cache,
         v1_key_cache,
+        v2_key_cache,
     ):
         torch.testing.assert_close(
             actual_key_cache,
@@ -102,6 +116,7 @@ def run_case(
     for actual_value_cache in (
         v0_value_cache,
         v1_value_cache,
+        v2_value_cache,
     ):
         torch.testing.assert_close(
             actual_value_cache,
@@ -147,9 +162,18 @@ def run_case(
         )
     )
 
+    v2_keys, v2_values = (
+        extension.gather_kv_cache_v2(
+            expected_key_cache,
+            expected_value_cache,
+            gather_slot_mapping,
+        )
+    )
+
     for actual_keys in (
         v0_keys,
         v1_keys,
+        v2_keys,
     ):
         torch.testing.assert_close(
             actual_keys,
@@ -161,6 +185,7 @@ def run_case(
     for actual_values in (
         v0_values,
         v1_values,
+        v2_values,
     ):
         torch.testing.assert_close(
             actual_values,
@@ -176,8 +201,20 @@ def run_case(
         atol=0,
     )
     torch.testing.assert_close(
+        v1_keys,
+        v2_keys,
+        rtol=0,
+        atol=0,
+    )
+    torch.testing.assert_close(
         v0_values,
         v1_values,
+        rtol=0,
+        atol=0,
+    )
+    torch.testing.assert_close(
+        v1_values,
+        v2_values,
         rtol=0,
         atol=0,
     )
@@ -262,11 +299,18 @@ def main() -> None:
 
     torch.cuda.synchronize()
 
-    print("Versioned CUDA KV cache correctness tests passed")
-    print("implementations: PyTorch, V0, V1")
+    print(
+        "Versioned CUDA KV cache correctness "
+        "tests passed"
+    )
+    print(
+        "implementations: PyTorch, V0, V1, V2"
+    )
     print("shapes: main, odd-sized, empty")
     print("Append: unique slots")
-    print("Gather: reordered and duplicate slots")
+    print(
+        "Gather: reordered and duplicate slots"
+    )
 
 
 if __name__ == "__main__":
