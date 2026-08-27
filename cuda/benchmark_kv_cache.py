@@ -9,51 +9,71 @@ import statistics
 import subprocess
 import sys
 from datetime import UTC, datetime
+from itertools import permutations
 from pathlib import Path
 from typing import Any
 
 import torch
 from load_extension import load_kv_cache_extension
 
-_VERSIONS = ("v0", "v1", "v2")
-_VERSION_ORDERS = (
-    ("v0", "v1", "v2"),
-    ("v1", "v2", "v0"),
-    ("v2", "v0", "v1"),
-    ("v2", "v1", "v0"),
-    ("v1", "v0", "v2"),
-    ("v0", "v2", "v1"),
-)
+_VERSIONS = ("v0", "v1", "v2", "v3")
+_VERSION_ORDERS = tuple(permutations(_VERSIONS))
+
 _VARIANT_DEFINITIONS = {
     "v0": (
         "Scalar-per-token baseline: one thread loops "
         "over all Key and Value elements for one token."
     ),
     "v1": (
-        "Flat-element coalesced implementation: adjacent "
+        "Fine-grained coalesced implementation: adjacent "
         "threads process adjacent elements of one token."
     ),
     "v2": (
-        "Vectorized chunk implementation: one thread "
-        "moves eight contiguous FP16 values as one "
-        "16-byte uint4 vector when alignment permits."
+        "Vectorized implementation: one thread moves "
+        "eight contiguous FP16 values as one aligned "
+        "16-byte uint4 vector, with a scalar tail path."
+    ),
+    "v3": (
+        "Thread-layout implementation built on V2: "
+        "the same 16-byte vector movement is retained, "
+        "while warps and lane groups are mapped to tokens "
+        "according to the number of vector chunks."
     ),
 }
+
 _COMPARISON_INTERPRETATIONS = {
     "v1_vs_v0": (
         "Combined benefit of fine-grained thread "
         "parallelism and coalesced access mapping."
     ),
     "v2_vs_v1": (
-        "Combined benefit of 16-byte vector chunking, "
-        "reduced thread count, address calculations, "
+        "Incremental benefit of 16-byte vector chunking, "
+        "fewer active threads, address calculations, "
         "and memory instructions."
+    ),
+    "v3_vs_v2": (
+        "Incremental benefit of changing only the "
+        "warp, lane-group, and token mapping while "
+        "retaining V2 vector movement."
     ),
     "v2_vs_v0": (
         "Cumulative benefit from the scalar-per-token "
         "baseline to the V2 vectorized implementation."
     ),
+    "v3_vs_v0": (
+        "Cumulative benefit from the scalar-per-token "
+        "baseline to the V3 thread-layout implementation."
+    ),
 }
+
+_COMPARISON_SPECS = (
+    ("v1_vs_v0", "v0", "v1"),
+    ("v2_vs_v1", "v1", "v2"),
+    ("v3_vs_v2", "v2", "v3"),
+    ("v2_vs_v0", "v0", "v2"),
+    ("v3_vs_v0", "v0", "v3"),
+)
+
 _PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
 
@@ -73,7 +93,7 @@ def parse_args() -> argparse.Namespace:
 
     parser = argparse.ArgumentParser(
         description=(
-            "Benchmark V0, V1, and V2 paged KV cache "
+            "Benchmark V0, V1, V2, and V3 paged KV cache "
             "CUDA kernels with CUDA Events."
         )
     )
@@ -111,7 +131,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--warmup",
         type=positive_integer,
-        default=100,
+        default=120,
     )
     parser.add_argument(
         "--repeats",
@@ -126,7 +146,7 @@ def parse_args() -> argparse.Namespace:
     parser.add_argument(
         "--seed",
         type=int,
-        default=20260824,
+        default=20260827,
     )
     parser.add_argument(
         "--output",
@@ -234,9 +254,7 @@ def build_banks(
 ) -> list[dict[str, torch.Tensor]]:
     """Create deterministic input and output tensor banks."""
 
-    generator = torch.Generator(
-        device="cuda"
-    )
+    generator = torch.Generator(device="cuda")
     generator.manual_seed(args.seed)
 
     capacity_tokens = (
@@ -327,36 +345,25 @@ def build_banks(
 def build_functions(
     extension: object,
 ) -> dict[str, dict[str, Any]]:
-    """Resolve benchmark functions before timing starts."""
+    """Resolve all benchmark functions before timing starts."""
 
     return {
         "append": {
-            "v0": (
-                extension
-                .append_kv_cache_v0_unchecked_
-            ),
-            "v1": (
-                extension
-                .append_kv_cache_v1_unchecked_
-            ),
-            "v2": (
-                extension
-                .append_kv_cache_v2_unchecked_
-            ),
+            version: getattr(
+                extension,
+                f"append_kv_cache_{version}_unchecked_",
+            )
+            for version in _VERSIONS
         },
         "gather": {
-            "v0": (
-                extension
-                .gather_kv_cache_v0_unchecked_out_
-            ),
-            "v1": (
-                extension
-                .gather_kv_cache_v1_unchecked_out_
-            ),
-            "v2": (
-                extension
-                .gather_kv_cache_v2_unchecked_out_
-            ),
+            version: getattr(
+                extension,
+                (
+                    f"gather_kv_cache_{version}"
+                    "_unchecked_out_"
+                ),
+            )
+            for version in _VERSIONS
         },
     }
 
@@ -388,7 +395,7 @@ def operation_arguments(
 def version_order(
     index: int,
 ) -> tuple[str, ...]:
-    """Rotate all version orders to balance position effects."""
+    """Rotate all permutations to balance position effects."""
 
     return _VERSION_ORDERS[
         index % len(_VERSION_ORDERS)
@@ -524,7 +531,7 @@ def measure_operation(
     repeats: int,
     useful_bytes: int,
 ) -> dict[str, Any]:
-    """Measure V0, V1, and V2 with interleaved CUDA Events."""
+    """Measure V0 through V3 with interleaved CUDA Events."""
 
     warm_up(
         operation=operation,
@@ -616,36 +623,16 @@ def measure_operation(
     }
 
     comparisons = {
-        "v1_vs_v0": compare_versions(
+        name: compare_versions(
             summaries,
-            baseline="v0",
-            candidate="v1",
+            baseline=baseline,
+            candidate=candidate,
             interpretation=(
-                _COMPARISON_INTERPRETATIONS[
-                    "v1_vs_v0"
-                ]
+                _COMPARISON_INTERPRETATIONS[name]
             ),
-        ),
-        "v2_vs_v1": compare_versions(
-            summaries,
-            baseline="v1",
-            candidate="v2",
-            interpretation=(
-                _COMPARISON_INTERPRETATIONS[
-                    "v2_vs_v1"
-                ]
-            ),
-        ),
-        "v2_vs_v0": compare_versions(
-            summaries,
-            baseline="v0",
-            candidate="v2",
-            interpretation=(
-                _COMPARISON_INTERPRETATIONS[
-                    "v2_vs_v0"
-                ]
-            ),
-        ),
+        )
+        for name, baseline, candidate
+        in _COMPARISON_SPECS
     }
 
     return {
@@ -676,7 +663,7 @@ def resolve_output_path(
         / "results"
         / "kernel_benchmarks"
         / (
-            "kv_cache_v0_v1_v2_"
+            "kv_cache_v0_v1_v2_v3_"
             f"{timestamp}.json"
         )
     )
@@ -701,10 +688,8 @@ def print_result(
             f"{summary['effective_bandwidth_gbps_at_p50']:.3f} GB/s"
         )
 
-    for comparison_name in (
-        "v1_vs_v0",
-        "v2_vs_v1",
-        "v2_vs_v0",
+    for comparison_name, _, _ in (
+        _COMPARISON_SPECS
     ):
         comparison = result[
             "comparisons"
@@ -791,7 +776,7 @@ def main() -> None:
     )
 
     payload = {
-        "schema_version": 2,
+        "schema_version": 3,
         "created_at_utc": datetime.now(
             UTC
         ).isoformat(),
@@ -815,6 +800,9 @@ def main() -> None:
         "configuration": {
             "operation": args.operation,
             "versions": list(_VERSIONS),
+            "version_order_count": len(
+                _VERSION_ORDERS
+            ),
             "version_orders": [
                 list(order)
                 for order in _VERSION_ORDERS
