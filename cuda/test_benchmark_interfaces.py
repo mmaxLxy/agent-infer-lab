@@ -7,6 +7,8 @@ from reference import (
     gather_kv_cache_reference,
 )
 
+_VERSIONS = ("v0", "v1", "v2", "v3")
+
 
 def run_case(
     extension: object,
@@ -54,9 +56,7 @@ def run_case(
     )
 
     expected_key_cache = initial_key_cache.clone()
-    expected_value_cache = (
-        initial_value_cache.clone()
-    )
+    expected_value_cache = initial_value_cache.clone()
 
     append_kv_cache_reference(
         keys,
@@ -66,11 +66,9 @@ def run_case(
         append_slot_mapping,
     )
 
-    for version in ("v0", "v1", "v2"):
+    for version in _VERSIONS:
         actual_key_cache = initial_key_cache.clone()
-        actual_value_cache = (
-            initial_value_cache.clone()
-        )
+        actual_value_cache = initial_value_cache.clone()
 
         append_function = getattr(
             extension,
@@ -124,22 +122,16 @@ def run_case(
         head_dim,
     )
 
-    for version in ("v0", "v1", "v2"):
+    for version in _VERSIONS:
         actual_keys = torch.empty(
             output_shape,
             dtype=torch.float16,
             device="cuda",
         )
-        actual_values = torch.empty_like(
-            actual_keys
-        )
+        actual_values = torch.empty_like(actual_keys)
 
-        key_pointer_before = (
-            actual_keys.data_ptr()
-        )
-        value_pointer_before = (
-            actual_values.data_ptr()
-        )
+        key_pointer_before = actual_keys.data_ptr()
+        value_pointer_before = actual_values.data_ptr()
 
         gather_function = getattr(
             extension,
@@ -163,19 +155,13 @@ def run_case(
                 "into preallocated outputs"
             )
 
-        if (
-            actual_keys.data_ptr()
-            != key_pointer_before
-        ):
+        if actual_keys.data_ptr() != key_pointer_before:
             raise AssertionError(
                 f"{version} Gather replaced "
                 "the preallocated Key output"
             )
 
-        if (
-            actual_values.data_ptr()
-            != value_pointer_before
-        ):
+        if actual_values.data_ptr() != value_pointer_before:
             raise AssertionError(
                 f"{version} Gather replaced "
                 "the preallocated Value output"
@@ -253,6 +239,27 @@ def main() -> None:
 
     run_case(
         extension,
+        num_blocks=8,
+        block_size=16,
+        num_kv_heads=4,
+        head_dim=65,
+        append_slots=[
+            2,
+            17,
+            64,
+            111,
+        ],
+        gather_slots=[
+            111,
+            2,
+            64,
+            17,
+            111,
+        ],
+    )
+
+    run_case(
+        extension,
         num_blocks=2,
         block_size=8,
         num_kv_heads=1,
@@ -268,14 +275,16 @@ def main() -> None:
         "correctness tests passed"
     )
     print(
-        "implementations: PyTorch, V0, V1, V2"
+        "implementations: PyTorch, "
+        "V0, V1, V2, V3"
     )
     print(
         "interfaces: unchecked Append, "
         "preallocated Gather"
     )
     print(
-        "shapes: main, odd-sized, empty"
+        "shapes: main, odd-sized, "
+        "multi-iteration, empty"
     )
     print(
         "preallocated output pointers: preserved"

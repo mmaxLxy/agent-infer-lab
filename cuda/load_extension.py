@@ -27,6 +27,10 @@ def load_kv_cache_extension(*, verbose: bool = True):
                 _CUDA_DIRECTORY
                 / "kv_cache_v2_kernels.cu"
             ),
+            str(
+                _CUDA_DIRECTORY
+                / "kv_cache_v3_kernels.cu"
+            ),
         ],
         extra_cflags=["-O2"],
         extra_cuda_cflags=["-O2"],

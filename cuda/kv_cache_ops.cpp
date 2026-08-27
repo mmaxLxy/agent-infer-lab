@@ -77,6 +77,29 @@ void gather_kv_cache_v2_out_cuda(
     torch::Tensor gathered_values
 );
 
+void append_kv_cache_v3_cuda(
+    torch::Tensor keys,
+    torch::Tensor values,
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+);
+
+std::tuple<torch::Tensor, torch::Tensor>
+gather_kv_cache_v3_cuda(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+);
+
+void gather_kv_cache_v3_out_cuda(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping,
+    torch::Tensor gathered_keys,
+    torch::Tensor gathered_values
+);
+
 namespace {
 
 void check_cuda_contiguous(
@@ -496,6 +519,49 @@ gather_kv_cache_v2(
     );
 }
 
+void append_kv_cache_v3(
+    torch::Tensor keys,
+    torch::Tensor values,
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    check_append_inputs(
+        keys,
+        values,
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+
+    append_kv_cache_v3_cuda(
+        keys,
+        values,
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+}
+
+std::tuple<torch::Tensor, torch::Tensor>
+gather_kv_cache_v3(
+    torch::Tensor key_cache,
+    torch::Tensor value_cache,
+    torch::Tensor slot_mapping
+) {
+    check_gather_inputs(
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+
+    return gather_kv_cache_v3_cuda(
+        key_cache,
+        value_cache,
+        slot_mapping
+    );
+}
+
 PYBIND11_MODULE(
     TORCH_EXTENSION_NAME,
     module
@@ -537,6 +603,16 @@ PYBIND11_MODULE(
         &gather_kv_cache_v2,
         "Checked V2 vectorized-chunk Gather"
     );
+    module.def(
+        "append_kv_cache_v3_",
+        &append_kv_cache_v3,
+        "Checked V3 subwarp-layout Append"
+    );
+    module.def(
+        "gather_kv_cache_v3",
+        &gather_kv_cache_v3,
+        "Checked V3 subwarp-layout Gather"
+    );
 
     module.def(
         "append_kv_cache_v0_unchecked_",
@@ -569,6 +645,17 @@ PYBIND11_MODULE(
         "gather_kv_cache_v2_unchecked_out_",
         &gather_kv_cache_v2_out_cuda,
         "Unchecked V2 Gather into "
+        "preallocated outputs"
+    );
+    module.def(
+        "append_kv_cache_v3_unchecked_",
+        &append_kv_cache_v3_cuda,
+        "Unchecked V3 Append for benchmarks"
+    );
+    module.def(
+        "gather_kv_cache_v3_unchecked_out_",
+        &gather_kv_cache_v3_out_cuda,
+        "Unchecked V3 Gather into "
         "preallocated outputs"
     );
 }

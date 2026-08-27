@@ -7,6 +7,8 @@ from reference import (
     gather_kv_cache_reference,
 )
 
+_VERSIONS = ("v0", "v1", "v2", "v3")
+
 
 def run_case(
     extension: object,
@@ -18,6 +20,8 @@ def run_case(
     append_slots: list[int],
     gather_slots: list[int],
 ) -> None:
+    """Compare all checked Kernel variants with PyTorch."""
+
     num_tokens = len(append_slots)
 
     keys = torch.randn(
@@ -64,60 +68,37 @@ def run_case(
         append_slot_mapping,
     )
 
-    v0_key_cache = initial_key_cache.clone()
-    v0_value_cache = initial_value_cache.clone()
+    for version in _VERSIONS:
+        actual_key_cache = initial_key_cache.clone()
+        actual_value_cache = (
+            initial_value_cache.clone()
+        )
 
-    extension.append_kv_cache_v0_(
-        keys,
-        values,
-        v0_key_cache,
-        v0_value_cache,
-        append_slot_mapping,
-    )
+        append_function = getattr(
+            extension,
+            f"append_kv_cache_{version}_",
+        )
 
-    v1_key_cache = initial_key_cache.clone()
-    v1_value_cache = (
-        initial_value_cache.clone()
-    )
+        append_result = append_function(
+            keys,
+            values,
+            actual_key_cache,
+            actual_value_cache,
+            append_slot_mapping,
+        )
 
-    extension.append_kv_cache_v1_(
-        keys,
-        values,
-        v1_key_cache,
-        v1_value_cache,
-        append_slot_mapping,
-    )
+        if append_result is not None:
+            raise AssertionError(
+                f"{version} Append must modify "
+                "the caches in place"
+            )
 
-    v2_key_cache = initial_key_cache.clone()
-    v2_value_cache = (
-        initial_value_cache.clone()
-    )
-
-    extension.append_kv_cache_v2_(
-        keys,
-        values,
-        v2_key_cache,
-        v2_value_cache,
-        append_slot_mapping,
-    )
-
-    for actual_key_cache in (
-        v0_key_cache,
-        v1_key_cache,
-        v2_key_cache,
-    ):
         torch.testing.assert_close(
             actual_key_cache,
             expected_key_cache,
             rtol=0,
             atol=0,
         )
-
-    for actual_value_cache in (
-        v0_value_cache,
-        v1_value_cache,
-        v2_value_cache,
-    ):
         torch.testing.assert_close(
             actual_value_cache,
             expected_value_cache,
@@ -146,78 +127,32 @@ def run_case(
         )
     )
 
-    v0_keys, v0_values = (
-        extension.gather_kv_cache_v0(
-            expected_key_cache,
-            expected_value_cache,
-            gather_slot_mapping,
+    for version in _VERSIONS:
+        gather_function = getattr(
+            extension,
+            f"gather_kv_cache_{version}",
         )
-    )
 
-    v1_keys, v1_values = (
-        extension.gather_kv_cache_v1(
-            expected_key_cache,
-            expected_value_cache,
-            gather_slot_mapping,
+        actual_keys, actual_values = (
+            gather_function(
+                expected_key_cache,
+                expected_value_cache,
+                gather_slot_mapping,
+            )
         )
-    )
 
-    v2_keys, v2_values = (
-        extension.gather_kv_cache_v2(
-            expected_key_cache,
-            expected_value_cache,
-            gather_slot_mapping,
-        )
-    )
-
-    for actual_keys in (
-        v0_keys,
-        v1_keys,
-        v2_keys,
-    ):
         torch.testing.assert_close(
             actual_keys,
             expected_keys,
             rtol=0,
             atol=0,
         )
-
-    for actual_values in (
-        v0_values,
-        v1_values,
-        v2_values,
-    ):
         torch.testing.assert_close(
             actual_values,
             expected_values,
             rtol=0,
             atol=0,
         )
-
-    torch.testing.assert_close(
-        v0_keys,
-        v1_keys,
-        rtol=0,
-        atol=0,
-    )
-    torch.testing.assert_close(
-        v1_keys,
-        v2_keys,
-        rtol=0,
-        atol=0,
-    )
-    torch.testing.assert_close(
-        v0_values,
-        v1_values,
-        rtol=0,
-        atol=0,
-    )
-    torch.testing.assert_close(
-        v1_values,
-        v2_values,
-        rtol=0,
-        atol=0,
-    )
 
     torch.testing.assert_close(
         expected_key_cache,
@@ -234,13 +169,15 @@ def run_case(
 
 
 def main() -> None:
+    """Run valid checked-interface cases."""
+
     if not torch.cuda.is_available():
         raise RuntimeError(
             "CUDA must be available for this test"
         )
 
-    torch.manual_seed(20260821)
-    torch.cuda.manual_seed_all(20260821)
+    torch.manual_seed(20260827)
+    torch.cuda.manual_seed_all(20260827)
 
     extension = load_kv_cache_extension()
 
@@ -289,6 +226,25 @@ def main() -> None:
 
     run_case(
         extension,
+        num_blocks=4,
+        block_size=16,
+        num_kv_heads=4,
+        head_dim=65,
+        append_slots=[
+            2,
+            17,
+            63,
+        ],
+        gather_slots=[
+            63,
+            2,
+            17,
+            63,
+        ],
+    )
+
+    run_case(
+        extension,
         num_blocks=2,
         block_size=8,
         num_kv_heads=1,
@@ -304,9 +260,13 @@ def main() -> None:
         "tests passed"
     )
     print(
-        "implementations: PyTorch, V0, V1, V2"
+        "implementations: PyTorch, "
+        "V0, V1, V2, V3"
     )
-    print("shapes: main, odd-sized, empty")
+    print(
+        "shapes: main, odd-sized, "
+        "multi-iteration, empty"
+    )
     print("Append: unique slots")
     print(
         "Gather: reordered and duplicate slots"
