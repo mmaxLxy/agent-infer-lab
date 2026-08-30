@@ -1,0 +1,364 @@
+{
+  "schema_version": 3,
+  "created_at_utc": "2026-08-28T08:03:44.759417+00:00",
+  "measurement_scope": "CUDA Event elapsed time around unchecked CUDA calls with preallocated Gather outputs",
+  "bandwidth_definition": "Logical useful Key/Value bytes read and written per call; metadata traffic is excluded",
+  "variant_definitions": {
+    "v0": "Scalar-per-token baseline: one thread loops over all Key and Value elements for one token.",
+    "v1": "Fine-grained coalesced implementation: adjacent threads process adjacent elements of one token.",
+    "v2": "Vectorized implementation: one thread moves eight contiguous FP16 values as one aligned 16-byte uint4 vector, with a scalar tail path.",
+    "v3": "Thread-layout implementation built on V2: the same 16-byte vector movement is retained, while warps and lane groups are mapped to tokens according to the number of vector chunks."
+  },
+  "comparison_interpretations": {
+    "v1_vs_v0": "Combined benefit of fine-grained thread parallelism and coalesced access mapping.",
+    "v2_vs_v1": "Incremental benefit of 16-byte vector chunking, fewer active threads, address calculations, and memory instructions.",
+    "v3_vs_v2": "Incremental benefit of changing only the warp, lane-group, and token mapping while retaining V2 vector movement.",
+    "v2_vs_v0": "Cumulative benefit from the scalar-per-token baseline to the V2 vectorized implementation.",
+    "v3_vs_v0": "Cumulative benefit from the scalar-per-token baseline to the V3 thread-layout implementation."
+  },
+  "command": [
+    "/home/ayax/.venvs/agent-infer-lab/bin/python",
+    "cuda/benchmark_kv_cache.py",
+    "--operation",
+    "gather",
+    "--num-tokens",
+    "2048",
+    "--num-blocks",
+    "256",
+    "--block-size",
+    "16",
+    "--num-kv-heads",
+    "2",
+    "--head-dim",
+    "64",
+    "--warmup",
+    "1",
+    "--repeats",
+    "1",
+    "--banks",
+    "1",
+    "--seed",
+    "20260828",
+    "--output",
+    "/tmp/agent-infer-lab-nsight/formal/v3_gather_h2_d64_tokens2048.json"
+  ],
+  "configuration": {
+    "operation": "gather",
+    "versions": [
+      "v0",
+      "v1",
+      "v2",
+      "v3"
+    ],
+    "version_order_count": 24,
+    "version_orders": [
+      [
+        "v0",
+        "v1",
+        "v2",
+        "v3"
+      ],
+      [
+        "v0",
+        "v1",
+        "v3",
+        "v2"
+      ],
+      [
+        "v0",
+        "v2",
+        "v1",
+        "v3"
+      ],
+      [
+        "v0",
+        "v2",
+        "v3",
+        "v1"
+      ],
+      [
+        "v0",
+        "v3",
+        "v1",
+        "v2"
+      ],
+      [
+        "v0",
+        "v3",
+        "v2",
+        "v1"
+      ],
+      [
+        "v1",
+        "v0",
+        "v2",
+        "v3"
+      ],
+      [
+        "v1",
+        "v0",
+        "v3",
+        "v2"
+      ],
+      [
+        "v1",
+        "v2",
+        "v0",
+        "v3"
+      ],
+      [
+        "v1",
+        "v2",
+        "v3",
+        "v0"
+      ],
+      [
+        "v1",
+        "v3",
+        "v0",
+        "v2"
+      ],
+      [
+        "v1",
+        "v3",
+        "v2",
+        "v0"
+      ],
+      [
+        "v2",
+        "v0",
+        "v1",
+        "v3"
+      ],
+      [
+        "v2",
+        "v0",
+        "v3",
+        "v1"
+      ],
+      [
+        "v2",
+        "v1",
+        "v0",
+        "v3"
+      ],
+      [
+        "v2",
+        "v1",
+        "v3",
+        "v0"
+      ],
+      [
+        "v2",
+        "v3",
+        "v0",
+        "v1"
+      ],
+      [
+        "v2",
+        "v3",
+        "v1",
+        "v0"
+      ],
+      [
+        "v3",
+        "v0",
+        "v1",
+        "v2"
+      ],
+      [
+        "v3",
+        "v0",
+        "v2",
+        "v1"
+      ],
+      [
+        "v3",
+        "v1",
+        "v0",
+        "v2"
+      ],
+      [
+        "v3",
+        "v1",
+        "v2",
+        "v0"
+      ],
+      [
+        "v3",
+        "v2",
+        "v0",
+        "v1"
+      ],
+      [
+        "v3",
+        "v2",
+        "v1",
+        "v0"
+      ]
+    ],
+    "num_tokens": 2048,
+    "num_blocks": 256,
+    "block_size": 16,
+    "num_kv_heads": 2,
+    "head_dim": 64,
+    "warmup": 1,
+    "repeats": 1,
+    "banks": 1,
+    "seed": 20260828,
+    "cache_capacity_tokens": 4096,
+    "dtype": "torch.float16"
+  },
+  "environment": {
+    "python_version": "3.12.3",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "torch_version": "2.11.0+cu129",
+    "torch_cuda_version": "12.9",
+    "cuda_available": true,
+    "gpu_name": "NVIDIA GeForce RTX 4060",
+    "gpu_total_memory_bytes": 8585216000,
+    "compute_capability": [
+      8,
+      9
+    ],
+    "driver_version": "581.57",
+    "nvcc_version": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0",
+    "git_commit": "dff708802ec68adb7ac039d3909c897a58b354fb",
+    "git_status_short": "",
+    "git_worktree_clean": true,
+    "environment_variables": {
+      "CUDA_HOME": "/usr/local/cuda-12.9",
+      "CUDACXX": "/usr/local/cuda-12.9/bin/nvcc",
+      "TORCH_EXTENSIONS_DIR": "/mnt/d/agent-infer-lab/.torch_extensions",
+      "TORCH_CUDA_ARCH_LIST": "8.9",
+      "MAX_JOBS": "2"
+    }
+  },
+  "results": [
+    {
+      "operation": "gather",
+      "useful_bytes_per_call": 2097152,
+      "samples": {
+        "v0": [
+          {
+            "repeat_index": 0,
+            "order_index": 0,
+            "bank_index": 0,
+            "milliseconds": 0.06835199892520905,
+            "effective_bandwidth_gbps": 30.681648422523967
+          }
+        ],
+        "v1": [
+          {
+            "repeat_index": 0,
+            "order_index": 1,
+            "bank_index": 0,
+            "milliseconds": 0.008415999822318554,
+            "effective_bandwidth_gbps": 249.18631704797824
+          }
+        ],
+        "v2": [
+          {
+            "repeat_index": 0,
+            "order_index": 2,
+            "bank_index": 0,
+            "milliseconds": 0.005439999978989363,
+            "effective_bandwidth_gbps": 385.5058838418611
+          }
+        ],
+        "v3": [
+          {
+            "repeat_index": 0,
+            "order_index": 3,
+            "bank_index": 0,
+            "milliseconds": 0.005183999892324209,
+            "effective_bandwidth_gbps": 404.5432182792266
+          }
+        ]
+      },
+      "summary": {
+        "v0": {
+          "sample_count": 1,
+          "mean_ms": 0.06835199892520905,
+          "standard_deviation_ms": 0.0,
+          "minimum_ms": 0.06835199892520905,
+          "p50_ms": 0.06835199892520905,
+          "p95_ms": 0.06835199892520905,
+          "p99_ms": 0.06835199892520905,
+          "maximum_ms": 0.06835199892520905,
+          "effective_bandwidth_gbps_at_p50": 30.681648422523967
+        },
+        "v1": {
+          "sample_count": 1,
+          "mean_ms": 0.008415999822318554,
+          "standard_deviation_ms": 0.0,
+          "minimum_ms": 0.008415999822318554,
+          "p50_ms": 0.008415999822318554,
+          "p95_ms": 0.008415999822318554,
+          "p99_ms": 0.008415999822318554,
+          "maximum_ms": 0.008415999822318554,
+          "effective_bandwidth_gbps_at_p50": 249.18631704797824
+        },
+        "v2": {
+          "sample_count": 1,
+          "mean_ms": 0.005439999978989363,
+          "standard_deviation_ms": 0.0,
+          "minimum_ms": 0.005439999978989363,
+          "p50_ms": 0.005439999978989363,
+          "p95_ms": 0.005439999978989363,
+          "p99_ms": 0.005439999978989363,
+          "maximum_ms": 0.005439999978989363,
+          "effective_bandwidth_gbps_at_p50": 385.5058838418611
+        },
+        "v3": {
+          "sample_count": 1,
+          "mean_ms": 0.005183999892324209,
+          "standard_deviation_ms": 0.0,
+          "minimum_ms": 0.005183999892324209,
+          "p50_ms": 0.005183999892324209,
+          "p95_ms": 0.005183999892324209,
+          "p99_ms": 0.005183999892324209,
+          "maximum_ms": 0.005183999892324209,
+          "effective_bandwidth_gbps_at_p50": 404.5432182792266
+        }
+      },
+      "comparisons": {
+        "v1_vs_v0": {
+          "baseline": "v0",
+          "candidate": "v1",
+          "interpretation": "Combined benefit of fine-grained thread parallelism and coalesced access mapping.",
+          "p50_speedup": 8.121673047561746,
+          "p50_latency_reduction_percent": 87.68726598394385
+        },
+        "v2_vs_v1": {
+          "baseline": "v1",
+          "candidate": "v2",
+          "interpretation": "Incremental benefit of 16-byte vector chunking, fewer active threads, address calculations, and memory instructions.",
+          "p50_speedup": 1.5470587968425082,
+          "p50_latency_reduction_percent": 35.361215615013194
+        },
+        "v3_vs_v2": {
+          "baseline": "v2",
+          "candidate": "v3",
+          "interpretation": "Incremental benefit of changing only the warp, lane-group, and token mapping while retaining V2 vector movement.",
+          "p50_speedup": 1.0493827337929165,
+          "p50_latency_reduction_percent": 4.70588396422591
+        },
+        "v2_vs_v0": {
+          "baseline": "v0",
+          "candidate": "v2",
+          "interpretation": "Cumulative benefit from the scalar-per-token baseline to the V2 vectorized implementation.",
+          "p50_speedup": 12.564705733309102,
+          "p50_latency_reduction_percent": 92.04119840746453
+        },
+        "v3_vs_v0": {
+          "baseline": "v0",
+          "candidate": "v3",
+          "interpretation": "Cumulative benefit from the scalar-per-token baseline to the V3 thread-layout implementation.",
+          "p50_speedup": 13.185185251723436,
+          "p50_latency_reduction_percent": 92.41573037535221
+        }
+      }
+    }
+  ]
+}

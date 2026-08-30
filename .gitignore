@@ -20,6 +20,10 @@ results/*
 !results/.gitkeep
 !results/kernel_benchmarks/
 !results/kernel_benchmarks/*.json
+!results/nsight_compute/
+!results/nsight_compute/*.json
+!results/nsight_compute/*.ncu-rep
+!results/nsight_compute/*.txt
 *.safetensors
 *.pth
 *.pt
