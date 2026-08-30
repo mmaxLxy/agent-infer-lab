@@ -1,31 +1,39 @@
+
 """Fixed-concurrency execution for reproducible vLLM benchmarks."""
 
 import argparse
+import sys
+import time
 from collections import Counter
 from collections.abc import Callable, Sequence
 from concurrent.futures import ThreadPoolExecutor
-from dataclasses import dataclass
+from dataclasses import asdict, dataclass
+from pathlib import Path
 
 from agent_infer_lab.metrics import MetricsSummary, RequestTrace, summarize_metrics
 from agent_infer_lab.prompting import PreparedRequest, prepare_requests
+from agent_infer_lab.result_storage import collect_run_metadata, write_json_result
 from agent_infer_lab.vllm_client import VllmClient
 from agent_infer_lab.workloads import WorkloadConfig, generate_workload
 
 SendRequest = Callable[[PreparedRequest], RequestTrace]
+Clock = Callable[[], float]
 
 
 @dataclass(frozen=True)
 class RequestFailure:
-    """Failure information collected from one request."""
+    """Failure information and execution timestamps for one request."""
 
     request_id: str
     error_type: str
     message: str
+    started_at: float | None = None
+    completed_at: float | None = None
 
 
 @dataclass(frozen=True)
 class BenchmarkResult:
-    """Successful metrics and failures collected from one benchmark run."""
+    """Aggregated metrics, raw requests, traces, and failures."""
 
     total_requests: int
     successful_requests: int
@@ -33,6 +41,9 @@ class BenchmarkResult:
     success_rate: float
     metrics: MetricsSummary | None
     failures: tuple[RequestFailure, ...]
+    traces: tuple[RequestTrace, ...] = ()
+    prepared_requests: tuple[PreparedRequest, ...] = ()
+    wall_duration_seconds: float | None = None
 
 
 RequestOutcome = RequestTrace | RequestFailure
@@ -41,6 +52,9 @@ RequestOutcome = RequestTrace | RequestFailure
 def _request_failure(
     request: PreparedRequest,
     error: Exception,
+    *,
+    started_at: float,
+    completed_at: float,
 ) -> RequestFailure:
     """Convert an exception chain into stable failure information."""
 
@@ -52,6 +66,8 @@ def _request_failure(
         request_id=request.request_id,
         error_type=type(root_error).__name__,
         message=str(root_error) or repr(root_error),
+        started_at=started_at,
+        completed_at=completed_at,
     )
 
 
@@ -60,8 +76,9 @@ def run_benchmark(
     *,
     concurrency: int,
     send_request: SendRequest,
+    clock: Clock = time.perf_counter,
 ) -> BenchmarkResult:
-    """Run every request and collect both successes and failures."""
+    """Execute requests and retain raw data for result persistence."""
 
     if not requests:
         raise ValueError("requests must not be empty")
@@ -74,14 +91,36 @@ def run_benchmark(
     if concurrency > len(requests):
         raise ValueError("concurrency cannot exceed request count")
 
+    request_ids = tuple(request.request_id for request in requests)
+    if len(set(request_ids)) != len(request_ids):
+        raise ValueError("request IDs must be unique")
+
     def execute_one(request: PreparedRequest) -> RequestOutcome:
+        started_at = clock()
+
         try:
-            return send_request(request)
+            trace = send_request(request)
+            if not isinstance(trace, RequestTrace):
+                raise TypeError("send_request must return a RequestTrace")
+            if trace.request_id != request.request_id:
+                raise ValueError(
+                    "returned trace request_id must match the request"
+                )
+            return trace
         except Exception as error:  # noqa: BLE001
-            return _request_failure(request, error)
+            return _request_failure(
+                request,
+                error,
+                started_at=started_at,
+                completed_at=clock(),
+            )
+
+    batch_started_at = clock()
 
     with ThreadPoolExecutor(max_workers=concurrency) as executor:
         outcomes = tuple(executor.map(execute_one, requests))
+
+    wall_duration_seconds = clock() - batch_started_at
 
     traces = tuple(
         outcome
@@ -102,6 +141,9 @@ def run_benchmark(
         success_rate=len(traces) / len(requests),
         metrics=metrics,
         failures=failures,
+        traces=traces,
+        prepared_requests=requests,
+        wall_duration_seconds=wall_duration_seconds,
     )
 
 
@@ -118,6 +160,77 @@ def execute_benchmark(
         concurrency=config.concurrency,
         send_request=client.stream_completion,
     )
+
+
+def _wall_output_throughput(
+    result: BenchmarkResult,
+) -> float | None:
+    """Count successful output tokens over the full execution duration."""
+
+    duration = result.wall_duration_seconds
+    if duration is None or duration <= 0:
+        return None
+
+    total_output_tokens = (
+        result.metrics.total_output_tokens
+        if result.metrics is not None
+        else 0
+    )
+    return total_output_tokens / duration
+
+
+def build_result_payload(
+    config: WorkloadConfig,
+    client: VllmClient,
+    result: BenchmarkResult,
+    metadata: dict[str, object],
+) -> dict[str, object]:
+    """Build a versioned document containing configuration and raw results."""
+
+    serialized_result = asdict(result)
+    serialized_result["wall_output_throughput_tokens_per_second"] = (
+        _wall_output_throughput(result)
+    )
+
+    return {
+        "schema_version": 1,
+        "experiment_type": "vllm_fixed_concurrency",
+        "configuration": {
+            "workload": asdict(config),
+            "client": {
+                "base_url": client.base_url,
+                "model": client.model,
+                "timeout_seconds": client.timeout,
+            },
+        },
+        "metadata": metadata,
+        "metric_definitions": {
+            "timestamps": (
+                "Client-side time.perf_counter readings in seconds; "
+                "not UTC timestamps or server-side GPU timings."
+            ),
+            "metrics_scope": (
+                "The metrics object uses successful requests only."
+            ),
+            "wall_duration_seconds": (
+                "Time from executor creation through executor shutdown, "
+                "including successful and failed request execution; "
+                "excluding prompt preparation, metadata collection, "
+                "result aggregation, and JSON writing."
+            ),
+            "wall_output_throughput_tokens_per_second": (
+                "Output tokens from successful requests divided by "
+                "wall_duration_seconds. Partial output from failed "
+                "requests is not counted."
+            ),
+            "failure_timestamps": (
+                "Worker execution start and exception capture time; "
+                "executor queue wait is not part of an individual "
+                "failure duration."
+            ),
+        },
+        "result": serialized_result,
+    }
 
 
 def _positive_int(value: str) -> int:
@@ -157,6 +270,11 @@ def build_parser() -> argparse.ArgumentParser:
     parser.add_argument("--shared-prefix-ratio", type=_ratio, default=0.5)
     parser.add_argument("--seed", type=int, default=20260727)
     parser.add_argument("--timeout", type=float, default=60.0)
+    parser.add_argument(
+        "--output",
+        type=Path,
+        help="Save configuration and raw results to a new JSON file.",
+    )
     return parser
 
 
@@ -205,7 +323,16 @@ def _print_failures(failures: tuple[RequestFailure, ...]) -> None:
 
 
 def main(argv: Sequence[str] | None = None) -> None:
-    args = build_parser().parse_args(argv)
+    arguments = list(sys.argv[1:] if argv is None else argv)
+    parser = build_parser()
+    args = parser.parse_args(arguments)
+
+    output_path = None
+    if args.output is not None:
+        output_path = args.output.expanduser().resolve()
+        if output_path.exists():
+            parser.error(f"output path already exists: {output_path}")
+
     config = WorkloadConfig(
         request_count=args.requests,
         input_token_choices=tuple(args.input_tokens),
@@ -219,14 +346,44 @@ def main(argv: Sequence[str] | None = None) -> None:
         model=args.model,
         timeout=args.timeout,
     )
+
+    metadata = None
+    if output_path is not None:
+        metadata = collect_run_metadata(
+            [
+                sys.executable,
+                "-m",
+                "agent_infer_lab.benchmark",
+                *arguments,
+            ]
+        )
+
     result = execute_benchmark(config, client)
 
     print(f"total_requests: {result.total_requests}")
     print(f"successful_requests: {result.successful_requests}")
     print(f"failed_requests: {result.failed_requests}")
     print(f"success_rate: {result.success_rate:.6f}")
+    print(
+        "wall_duration_seconds: "
+        f"{_format_optional(result.wall_duration_seconds)}"
+    )
+    print(
+        "wall_output_throughput_tokens_per_second: "
+        f"{_format_optional(_wall_output_throughput(result))}"
+    )
     _print_metrics(result.metrics)
     _print_failures(result.failures)
+
+    if output_path is not None and metadata is not None:
+        payload = build_result_payload(
+            config,
+            client,
+            result,
+            metadata,
+        )
+        saved_path = write_json_result(output_path, payload)
+        print(f"raw_result: {saved_path}")
 
 
 if __name__ == "__main__":
