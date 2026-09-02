@@ -30,8 +30,11 @@ class VllmClient:
     model: str
     timeout: float = 60.0
     clock: Clock = field(default=time.perf_counter, repr=False, compare=False)
+    ignore_eos: bool = False
 
     def __post_init__(self) -> None:
+        if not isinstance(self.ignore_eos, bool):
+            raise ValueError("ignore_eos must be a boolean")
         parsed = self._parsed_url()
         if parsed.scheme not in {"http", "https"} or not parsed.hostname:
             raise ValueError("base_url must be an absolute HTTP or HTTPS URL")
@@ -131,6 +134,8 @@ class VllmClient:
             "stream": True,
             "stream_options": {"include_usage": True},
         }
+        if self.ignore_eos:
+            payload["ignore_eos"] = True
         connection = self._connection()
         started_at = self.clock()
         first_token_at: float | None = None

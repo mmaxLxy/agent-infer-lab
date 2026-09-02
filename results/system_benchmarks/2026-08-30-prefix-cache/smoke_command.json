@@ -1,0 +1,24 @@
+{
+  "command": [
+    "/home/ayax/.venvs/agent-infer-lab-dev/bin/python",
+    "-m",
+    "agent_infer_lab.benchmark",
+    "--base-url",
+    "http://127.0.0.1:8011",
+    "--model",
+    "Qwen/Qwen2.5-0.5B-Instruct",
+    "--requests",
+    "4",
+    "--concurrency",
+    "2",
+    "--input-tokens",
+    "128",
+    "--output-tokens",
+    "32",
+    "--output",
+    "/mnt/d/agent-infer-lab-results-staging/2026-08-30-controlled-formal/smoke.json"
+  ],
+  "returncode": 0,
+  "stdout": "total_requests: 4\nsuccessful_requests: 4\nfailed_requests: 0\nsuccess_rate: 1.000000\nwall_duration_seconds: 1.228107\nwall_output_throughput_tokens_per_second: 104.225445\nmetrics_scope: successful_requests_only\noutput_tokens: 128\nduration_seconds: 1.227136\noutput_throughput_tokens_per_second: 104.307959\nttft_p50_seconds: 0.042510\nttft_p99_seconds: 0.394879\ntpot_p50_seconds: 0.012309\ntpot_p99_seconds: 0.014422\ne2e_p50_seconds: 0.413856\ne2e_p99_seconds: 0.813029\nfailure_types: none\nraw_result: /mnt/d/agent-infer-lab-results-staging/2026-08-30-controlled-formal/smoke.json\n",
+  "stderr": ""
+}

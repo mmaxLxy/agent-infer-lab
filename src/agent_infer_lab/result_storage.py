@@ -43,7 +43,7 @@ def _source_hashes(
 
     source_files: set[Path] = set()
 
-    for directory_name in ("src", "cuda"):
+    for directory_name in ("src", "cuda", "scripts"):
         directory = repository_root / directory_name
 
         if not directory.is_dir():

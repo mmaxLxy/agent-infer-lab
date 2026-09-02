@@ -1,5 +1,6 @@
 import json
 from collections.abc import Iterator
+from dataclasses import replace
 from unittest.mock import patch
 
 import pytest
@@ -162,21 +163,39 @@ def test_stream_completion_reports_http_error() -> None:
 
 
 def test_tokenize_reports_invalid_tokens() -> None:
-    connection = FakeConnection(
-        FakeResponse(body=json.dumps({"tokens": [1, True]}).encode())
-    )
+    connection = FakeConnection(FakeResponse(body=json.dumps({"tokens": [1, True]}).encode()))
     client = make_client(connection)
 
     with pytest.raises(VllmClientError, match="invalid tokens"):
         client.tokenize("prompt")
 
 
+def test_ignore_eos_is_explicitly_sent_for_fixed_output_experiments() -> None:
+    connection = FakeConnection(
+        FakeResponse(
+            lines=(
+                b'data: {"choices":[{"text":"test"}]}\n',
+                b'data: {"choices":[],"usage":{"completion_tokens":4}}\n',
+                b"data: [DONE]\n",
+            )
+        )
+    )
+    client = replace(make_client(connection), ignore_eos=True)
+    object.__setattr__(client, "_connection", lambda: connection)
+    trace = client.stream_completion(PreparedRequest("req-1", (1, 2), 4))
+    assert json.loads(connection.requests[0][2])["ignore_eos"] is True
+    assert trace.output_tokens == 4
+
+
+def test_ignore_eos_rejects_non_boolean() -> None:
+    with pytest.raises(ValueError, match="ignore_eos"):
+        VllmClient("http://localhost:8000", "model", ignore_eos=1)  # type: ignore[arg-type]
+
+
 def test_https_uses_https_connection() -> None:
     client = VllmClient("https://example.com:8443", "model")
 
-    with patch(
-        "agent_infer_lab.vllm_client.http.client.HTTPSConnection"
-    ) as connection_type:
+    with patch("agent_infer_lab.vllm_client.http.client.HTTPSConnection") as connection_type:
         client._connection()
 
     connection_type.assert_called_once_with("example.com", 8443, timeout=60.0)

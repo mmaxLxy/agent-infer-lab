@@ -1,0 +1,90 @@
+{
+  "captured_at_utc": "2026-08-30T13:26:24.891443+00:00",
+  "python_executable": "/home/ayax/.venvs/agent-infer-lab-dev/bin/python",
+  "command": [
+    "/home/ayax/.venvs/agent-infer-lab-dev/bin/python",
+    "scripts/run_prefix_ablation.py",
+    "--output-dir",
+    "/mnt/d/agent-infer-lab-results-staging/2026-08-30-controlled-formal",
+    "--model-path",
+    "/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775",
+    "--port",
+    "8011"
+  ],
+  "repository_root": "/mnt/d/agent-infer-lab",
+  "git_commit": "a867d7a6ed67633357aba35eb19159cea2c1c670",
+  "git_status_short": " M .gitignore\n M src/agent_infer_lab/result_storage.py\n M src/agent_infer_lab/vllm_client.py\n M tests/test_vllm_client.py\n?? docs/experiments/2026-08-30-prefix-cache-protocol.md\n?? scripts/run_prefix_ablation.py\n?? src/agent_infer_lab/controlled_inputs.py\n?? tests/test_controlled_inputs.py\n?? tests/test_prefix_ablation_runner.py",
+  "git_worktree_clean": false,
+  "source_sha256": {
+    "cuda/benchmark_kv_cache.py": "d4d7cfc73d149513547d06bbb8e9471740404e14885f1e9fe20cfcb885c62f3d",
+    "cuda/kv_cache_ops.cpp": "1f7883674fd171da5e63de5b398f404125127a325e3b29a31adf25b60374a970",
+    "cuda/kv_cache_v0_kernels.cu": "ea46c54b77988844407ab679a67da7f0a3c5e023d9f915601e679dcb4c0ff161",
+    "cuda/kv_cache_v1_kernels.cu": "b73d860b0c1af71419b0c50eff7ec669b59c6477110023c07e63701c57523a04",
+    "cuda/kv_cache_v2_kernels.cu": "b14894d88484f8de0094990c72ed88f31ab2c38a5e96eca44698ccf9507913f6",
+    "cuda/kv_cache_v3_kernels.cu": "f21dd058f0ccf65e7623659bd5f32b8b589e13310a592f46a1a2a7a962d9d6d0",
+    "cuda/load_extension.py": "9e14008108c2c7d261210eb0ed13fe908ff55aebdda52096825db403938fe116",
+    "cuda/reference.py": "25d53528834f44d6f718469c6e8180f9c4e6b7734c59d31e87ec266a9a6a422d",
+    "cuda/test_append_cases.py": "8be6bdee981a47f7843965fc51e3748cb642e973dad0581649ccca3f1e7503ee",
+    "cuda/test_append_smoke.py": "b30604d07fe683c1f9b3a7e50a3e637b0aacbd48edf0c05f4be9d9965a535e66",
+    "cuda/test_benchmark_interfaces.py": "6d17e7b5061622c7ffff53cd1143ac507c3df1f0b4eeb64c15afcdb4620515d7",
+    "cuda/test_extension_smoke.py": "c45e3622fc900e17363cf9d09f42f0a4d2c5f342f11f718f5b999cb58be7e148",
+    "cuda/test_gather_cases.py": "c84c1398bcc11056d1fd0b49c39068f863568dbe727e80fcf96d151992384a91",
+    "cuda/test_gather_smoke.py": "340f68ff6b5b44ba41c945916066c839ca019276ea4e2ab09c9c8375eb158b77",
+    "cuda/test_kernel_variants_correctness.py": "bb61bb502fd1f189aecf4bc4b950e10dbe0df4878f4a01c1b9608fb9f26a42fe",
+    "pyproject.toml": "a96a39536e02af15dc1e54ed67604943b78b7043b5a8af6d0e8ebba4b62ed134",
+    "scripts/check_environment.py": "17475c79655ffe6a9cb5cb4e6b0c090c06da298a5f7332187fb77498c58fca40",
+    "scripts/run_prefix_ablation.py": "0908e1e63e47de9ce8b4124a5f8f4aa34e2d5e123d7c7f3acaba992209b60027",
+    "src/agent_infer_lab/__init__.py": "9194bb6293fa43274267c697884a71fe5b26f2de1dd84c27dc8275f1f9b1e45a",
+    "src/agent_infer_lab/benchmark.py": "a281fe09277e2c868b869f18352530a3c3559aa49b26c79588964d811705832c",
+    "src/agent_infer_lab/controlled_inputs.py": "90148d2d523d82d488519cce9481a56703f046c681ea3c329c1f711f5286013f",
+    "src/agent_infer_lab/environment.py": "75cbc2c00131bea666b53ffb7acf9f5e5a7b9f2ec3f711a31dae47a59f05bd8c",
+    "src/agent_infer_lab/kv_cache_layout.py": "97d37f133f13d792e3f0c1ba26fdf4606e33db7c5065cfc17734d99445c36a9d",
+    "src/agent_infer_lab/metrics.py": "770b0bea241ad29406de8dfce6ef79484e9dcc2ab4be91137b520d62bc616e94",
+    "src/agent_infer_lab/prompting.py": "53bd69d0cebad36d9f0c573f4317047906e5e08b8754c798fb5d46ffe64be729",
+    "src/agent_infer_lab/result_storage.py": "8f6749f6f635100f252217c55b5fc80b20b7ae8e7c4830274764a24f74bbfca3",
+    "src/agent_infer_lab/vllm_client.py": "a46e09f353e5f9dc32cce5c27294f48ee8bd23c690087454859b2c5e0dd30806",
+    "src/agent_infer_lab/workloads.py": "de8cb0a7e49682fd8e146f268f50fbf3c2931b6585736d897d8d4d61de7cb9a8",
+    "uv.lock": "a2f4d391ee4277957b177b8ad5171036ff185919f4098dcadbfcf31a5055ad4a"
+  },
+  "client_environment": {
+    "python": {
+      "version": "3.12.3",
+      "executable": "/home/ayax/.venvs/agent-infer-lab-dev/bin/python"
+    },
+    "platform": {
+      "system": "Linux",
+      "release": "6.18.33.2-microsoft-standard-WSL2",
+      "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39"
+    },
+    "packages": {
+      "torch": null,
+      "vllm": null
+    },
+    "tools": {
+      "nvcc": {
+        "available": true,
+        "path": "/usr/local/bin/nvcc",
+        "output": "nvcc: NVIDIA (R) Cuda compiler driver\nCopyright (c) 2005-2025 NVIDIA Corporation\nBuilt on Tue_May_27_02:21:03_PDT_2025\nCuda compilation tools, release 12.9, V12.9.86\nBuild cuda_12.9.r12.9/compiler.36037853_0",
+        "error": null
+      },
+      "nsys": {
+        "available": true,
+        "path": "/usr/local/bin/nsys",
+        "output": "NVIDIA Nsight Systems version 2025.1.3.140-251335620677v0",
+        "error": null
+      },
+      "ncu": {
+        "available": true,
+        "path": "/usr/local/bin/ncu",
+        "output": "NVIDIA (R) Nsight Compute Command Line Profiler\nCopyright (c) 2018-2025 NVIDIA Corporation\nVersion 2025.2.1.0 (build 35987062) (public-release)",
+        "error": null
+      }
+    },
+    "gpu": {
+      "available": true,
+      "path": "/usr/lib/wsl/lib/nvidia-smi",
+      "output": "NVIDIA GeForce RTX 4060, 8188 MiB, 581.57, 8.9",
+      "error": null
+    }
+  }
+}

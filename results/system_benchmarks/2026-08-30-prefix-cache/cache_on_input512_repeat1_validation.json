@@ -1,0 +1,13 @@
+{
+  "recomputed_metrics_match": true,
+  "all_request_ids_accounted_for": true,
+  "successful_requests": 80,
+  "failed_requests": 0,
+  "prefix_queries_delta": 40960.0,
+  "prefix_hits_delta": 30336.0,
+  "prefix_hit_rate": 0.740625,
+  "output_lengths": [
+    64
+  ],
+  "fixed_output_length_passed": true
+}
