@@ -1,0 +1,2 @@
+{"adapter_sha256": "ae69dc2c6318f611c344be399da0b3bc0af4f980be5278fb005c38801bdb26cd", "event": "registered", "hook": "FlashAttentionImpl.do_kv_cache_update", "mode": "verify", "pid": 2490, "plugin_sha256": "2286a1e48114fe3f5faf9aaa3f9b3234ee558544dc14608b05961a8389c5b77f", "time_unix": 1788162534.6792045, "vllm_version": "0.23.0"}
+{"calls": 0, "empty_calls": 0, "event": "process_exit", "mode": "verify", "pid": 2490, "time_unix": 1788163175.9687123, "verified_calls": 0, "verified_valid_tokens": 0}
