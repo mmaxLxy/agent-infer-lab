@@ -1,0 +1,113 @@
+{
+  "schema_version": 1,
+  "purpose": "M1 Append end-to-end attribution",
+  "baseline": {
+    "git_head_before_m1_commit": "7917d9a2accc354de17d7858782cd30722887d21",
+    "git_worktree_clean_during_run": false,
+    "gpu": "NVIDIA GeForce RTX 4060 8 GiB",
+    "model": "Qwen/Qwen2.5-0.5B-Instruct",
+    "model_revision": "7ae557604adf67be50417f59c2c2f167def9a775",
+    "num_hidden_layers": 24,
+    "torch": "2.11.0+cu129",
+    "vllm": "0.23.0",
+    "native_tpot_p50_ms": 11.97,
+    "native_ttft_p50_ms": 125.78
+  },
+  "source_sha256": {
+    "scripts/benchmark_append_integration.py": "6ddd0816a26dbb7b73a0cfeb44c44020ccf175d6db0b7b4892bac3c928e297bd",
+    "cuda/vllm_append_adapter.py": "ae69dc2c6318f611c344be399da0b3bc0af4f980be5278fb005c38801bdb26cd"
+  },
+  "observed_serving_shapes": {
+    "source": "../2026-08-31-append-e2e/verification/hook/append_verify_2533.jsonl",
+    "effective_calls": 816,
+    "mapped_rows_call_counts": {
+      "1": 48,
+      "2": 672,
+      "128": 48,
+      "129": 48
+    },
+    "decode_calls": 720,
+    "decode_call_fraction": 0.8823529411764706,
+    "prefill_calls": 96
+  },
+  "headline_microbenchmark": {
+    "tokens": 2048,
+    "comparison": "same-extension V3 versus deliberately naive V0",
+    "v0_us": 62.464,
+    "v3_us": 5.216,
+    "v3_vs_v0_speedup": 11.98
+  },
+  "native_custom_shape_benchmark": {
+    "independent_processes": 3,
+    "rounds_per_process": 7,
+    "tokens_2048": {
+      "native_direct_device_us_median": 13.43,
+      "custom_direct_device_us_median": 5.36,
+      "custom_vs_native_speedup_median": 2.37,
+      "custom_vs_native_speedup_range": [
+        2.17,
+        2.56
+      ]
+    },
+    "observed_decode_shape_weighted": {
+      "native_python_path_us_per_layer_call_median": 7.590344433333333,
+      "native_python_path_us_per_layer_call_range": [
+        7.400877166666667,
+        8.990467633333335
+      ],
+      "custom_python_path_us_per_layer_call_median": 5.7116438333333335,
+      "custom_python_path_us_per_layer_call_range": [
+        5.557296766666666,
+        5.937353833333332
+      ],
+      "native_append_share_of_tpot_percent_median": 1.5218735705931494,
+      "native_append_share_of_tpot_percent_range": [
+        1.4838851461988303,
+        1.802600026733501
+      ],
+      "predicted_tpot_change_custom_minus_native_percent_median": -0.407628604845447,
+      "predicted_tpot_change_custom_minus_native_percent_range": [
+        -0.6121531428571435,
+        -0.3386934001670843
+      ]
+    },
+    "observed_prefill_shape_weighted": {
+      "native_append_share_of_ttft_percent_median": 0.1440167101287963,
+      "native_append_share_of_ttft_percent_range": [
+        0.14353252663380506,
+        0.1528243838448084
+      ]
+    }
+  },
+  "archived_end_to_end_variation": {
+    "native_throughput_tokens_per_second_range": [
+      286.70,
+      299.01
+    ],
+    "custom_throughput_tokens_per_second_range": [
+      287.92,
+      302.07
+    ],
+    "paired_throughput_change_percent_range": [
+      -3.71,
+      5.36
+    ],
+    "paired_tpot_p50_change_percent_range": [
+      -7.95,
+      4.69
+    ],
+    "median_throughput_change_percent": -0.79,
+    "median_tpot_p50_change_percent": 1.61
+  },
+  "attribution": [
+    "The 11.98x headline compares V3 with a deliberately naive V0, not with native vLLM.",
+    "Most real decode calls append only one or two token rows, not 2048 rows.",
+    "Native Append is only about 1.48% to 1.80% of TPOT, so the measured custom advantage predicts just 0.34% to 0.61% TPOT improvement.",
+    "The predicted improvement is smaller than the archived run-to-run variation, so its sign is not stable end to end.",
+    "Python checks and dispatch add fixed overhead, but the isolated custom path remains faster; they are secondary rather than the primary cause."
+  ],
+  "evidence_limit": {
+    "nsight_systems": "No timeline was archived because nsys profile returned Connection refused in the current WSL session.",
+    "timing_used": "Three independent CUDA Event and wall-clock benchmark processes, seven counter-rotated rounds per process."
+  }
+}

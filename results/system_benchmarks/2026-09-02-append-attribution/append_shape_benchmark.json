@@ -1,0 +1,1414 @@
+{
+  "derived": {
+    "custom_append_share_of_tpot_percent": 1.1142449657477025,
+    "decode_custom_append_us_per_model_step": 133.37512239999998,
+    "decode_custom_weighted_us_per_layer_call": 5.557296766666666,
+    "decode_native_append_us_per_model_step": 182.1682664,
+    "decode_native_weighted_us_per_layer_call": 7.590344433333333,
+    "decode_shape_counts": {
+      "1": 48,
+      "2": 672
+    },
+    "expected_tpot_change_from_custom_minus_native_percent": -0.407628604845447,
+    "headline_v0_us_tokens_2048": 62.464,
+    "headline_v3_us_tokens_2048": 5.216,
+    "headline_v3_vs_v0_speedup": 11.98,
+    "maximum_tpot_reduction_if_native_append_were_free_percent": 1.5218735705931494,
+    "native_append_share_of_tpot_percent": 1.5218735705931494,
+    "native_append_share_of_ttft_percent": 0.1528243838448084,
+    "observed_calls": 816,
+    "observed_shape_counts": {
+      "1": 48,
+      "2": 672,
+      "128": 48,
+      "129": 48
+    },
+    "prefill_native_weighted_us_per_layer_call": 8.00927125,
+    "prefill_shape_counts": {
+      "128": 48,
+      "129": 48
+    }
+  },
+  "environment": {
+    "gpu": "NVIDIA GeForce RTX 4060",
+    "platform": "Linux-6.18.33.2-microsoft-standard-WSL2-x86_64-with-glibc2.39",
+    "python": "3.12.3",
+    "torch": "2.11.0+cu129",
+    "torch_cuda": "12.9",
+    "vllm": "0.23.0"
+  },
+  "measurement": {
+    "archived_native_tpot_p50_ms": 11.97,
+    "archived_native_ttft_p50_ms": 125.78,
+    "iterations_large": 500,
+    "iterations_small": 2000,
+    "layers": 24,
+    "rounds": 7,
+    "timing_note": "CUDA Event measures device timeline for repeated calls; host enqueue and wall measurements use perf_counter around the same repeated calls.",
+    "warmup_per_round": 200
+  },
+  "purpose": "M1 Append end-to-end attribution",
+  "results": {
+    "1": {
+      "cache_shape": [
+        256,
+        2,
+        16,
+        2,
+        64
+      ],
+      "cache_stride": [
+        4096,
+        2048,
+        128,
+        64,
+        1
+      ],
+      "correctness": "bitwise_equal",
+      "input_shape": [
+        1,
+        2,
+        64
+      ],
+      "input_stride": [
+        1152,
+        64,
+        1
+      ],
+      "iterations": 2000,
+      "raw_rounds": {
+        "custom_direct": [
+          {
+            "device_timeline_us_per_call": 3.555840015411377,
+            "host_enqueue_us_per_call": 2.4749830000000004,
+            "wall_with_final_sync_us_per_call": 3.6066325000000004
+          },
+          {
+            "device_timeline_us_per_call": 3.393872022628784,
+            "host_enqueue_us_per_call": 2.4853829999999997,
+            "wall_with_final_sync_us_per_call": 4.2108615
+          },
+          {
+            "device_timeline_us_per_call": 4.323840141296387,
+            "host_enqueue_us_per_call": 2.4140455000000003,
+            "wall_with_final_sync_us_per_call": 3.3855785000000003
+          },
+          {
+            "device_timeline_us_per_call": 2.629631996154785,
+            "host_enqueue_us_per_call": 2.401641,
+            "wall_with_final_sync_us_per_call": 3.781049
+          },
+          {
+            "device_timeline_us_per_call": 3.5343360900878906,
+            "host_enqueue_us_per_call": 2.393841,
+            "wall_with_final_sync_us_per_call": 3.509241
+          },
+          {
+            "device_timeline_us_per_call": 2.5844640731811523,
+            "host_enqueue_us_per_call": 2.510895,
+            "wall_with_final_sync_us_per_call": 3.5944450000000003
+          },
+          {
+            "device_timeline_us_per_call": 3.5768320560455322,
+            "host_enqueue_us_per_call": 5.756778000000001,
+            "wall_with_final_sync_us_per_call": 5.8347240000000005
+          }
+        ],
+        "custom_python_path": [
+          {
+            "device_timeline_us_per_call": 5.096447944641113,
+            "host_enqueue_us_per_call": 5.474678,
+            "wall_with_final_sync_us_per_call": 5.5025195
+          },
+          {
+            "device_timeline_us_per_call": 5.280767917633057,
+            "host_enqueue_us_per_call": 5.4381695,
+            "wall_with_final_sync_us_per_call": 5.483453000000001
+          },
+          {
+            "device_timeline_us_per_call": 4.909056186676025,
+            "host_enqueue_us_per_call": 9.332102,
+            "wall_with_final_sync_us_per_call": 9.384969
+          },
+          {
+            "device_timeline_us_per_call": 5.0775041580200195,
+            "host_enqueue_us_per_call": 8.7703395,
+            "wall_with_final_sync_us_per_call": 8.9413435
+          },
+          {
+            "device_timeline_us_per_call": 6.602752208709717,
+            "host_enqueue_us_per_call": 5.367373499999999,
+            "wall_with_final_sync_us_per_call": 5.9184655
+          },
+          {
+            "device_timeline_us_per_call": 5.675375938415527,
+            "host_enqueue_us_per_call": 5.40112,
+            "wall_with_final_sync_us_per_call": 5.4463490000000006
+          },
+          {
+            "device_timeline_us_per_call": 5.545472145080566,
+            "host_enqueue_us_per_call": 8.384781499999999,
+            "wall_with_final_sync_us_per_call": 8.444906499999998
+          }
+        ],
+        "native_direct": [
+          {
+            "device_timeline_us_per_call": 7.49560022354126,
+            "host_enqueue_us_per_call": 8.644781499999999,
+            "wall_with_final_sync_us_per_call": 8.6880065
+          },
+          {
+            "device_timeline_us_per_call": 7.531343936920166,
+            "host_enqueue_us_per_call": 5.182557,
+            "wall_with_final_sync_us_per_call": 5.9930525
+          },
+          {
+            "device_timeline_us_per_call": 4.72976016998291,
+            "host_enqueue_us_per_call": 5.221232,
+            "wall_with_final_sync_us_per_call": 5.3052985
+          },
+          {
+            "device_timeline_us_per_call": 4.715487957000732,
+            "host_enqueue_us_per_call": 4.885724,
+            "wall_with_final_sync_us_per_call": 5.0510405
+          },
+          {
+            "device_timeline_us_per_call": 5.624783992767334,
+            "host_enqueue_us_per_call": 5.062849,
+            "wall_with_final_sync_us_per_call": 5.159157
+          },
+          {
+            "device_timeline_us_per_call": 5.119487762451172,
+            "host_enqueue_us_per_call": 5.160674,
+            "wall_with_final_sync_us_per_call": 5.664424
+          },
+          {
+            "device_timeline_us_per_call": 6.683648109436035,
+            "host_enqueue_us_per_call": 5.0598155,
+            "wall_with_final_sync_us_per_call": 5.186132499999999
+          }
+        ],
+        "native_python_path": [
+          {
+            "device_timeline_us_per_call": 7.0312957763671875,
+            "host_enqueue_us_per_call": 7.246957,
+            "wall_with_final_sync_us_per_call": 7.40014
+          },
+          {
+            "device_timeline_us_per_call": 6.776832103729248,
+            "host_enqueue_us_per_call": 7.1340735,
+            "wall_with_final_sync_us_per_call": 7.1912735
+          },
+          {
+            "device_timeline_us_per_call": 11.941887855529785,
+            "host_enqueue_us_per_call": 8.5387235,
+            "wall_with_final_sync_us_per_call": 8.814540000000001
+          },
+          {
+            "device_timeline_us_per_call": 6.911856174468994,
+            "host_enqueue_us_per_call": 7.587286,
+            "wall_with_final_sync_us_per_call": 7.8030315
+          },
+          {
+            "device_timeline_us_per_call": 6.968319892883301,
+            "host_enqueue_us_per_call": 7.4513275000000005,
+            "wall_with_final_sync_us_per_call": 7.9102815
+          },
+          {
+            "device_timeline_us_per_call": 6.6087517738342285,
+            "host_enqueue_us_per_call": 7.1991819999999995,
+            "wall_with_final_sync_us_per_call": 7.2612025000000004
+          },
+          {
+            "device_timeline_us_per_call": 9.673727989196777,
+            "host_enqueue_us_per_call": 9.5600355,
+            "wall_with_final_sync_us_per_call": 9.6064565
+          }
+        ]
+      },
+      "summary": {
+        "custom_direct": {
+          "device_timeline_us_per_call": {
+            "max": 4.323840141296387,
+            "median": 3.5343360900878906,
+            "min": 2.5844640731811523,
+            "p20": 2.629631996154785,
+            "p80": 3.5768320560455322
+          },
+          "host_enqueue_us_per_call": {
+            "max": 5.756778000000001,
+            "median": 2.4749830000000004,
+            "min": 2.393841,
+            "p20": 2.401641,
+            "p80": 2.510895
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 5.8347240000000005,
+            "median": 3.6066325000000004,
+            "min": 3.3855785000000003,
+            "p20": 3.509241,
+            "p80": 4.2108615
+          }
+        },
+        "custom_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 6.602752208709717,
+            "median": 5.280767917633057,
+            "min": 4.909056186676025,
+            "p20": 5.0775041580200195,
+            "p80": 5.675375938415527
+          },
+          "host_enqueue_us_per_call": {
+            "max": 9.332102,
+            "median": 5.474678,
+            "min": 5.367373499999999,
+            "p20": 5.40112,
+            "p80": 8.7703395
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 9.384969,
+            "median": 5.9184655,
+            "min": 5.4463490000000006,
+            "p20": 5.483453000000001,
+            "p80": 8.9413435
+          }
+        },
+        "native_direct": {
+          "device_timeline_us_per_call": {
+            "max": 7.531343936920166,
+            "median": 5.624783992767334,
+            "min": 4.715487957000732,
+            "p20": 4.72976016998291,
+            "p80": 7.49560022354126
+          },
+          "host_enqueue_us_per_call": {
+            "max": 8.644781499999999,
+            "median": 5.160674,
+            "min": 4.885724,
+            "p20": 5.0598155,
+            "p80": 5.221232
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 8.6880065,
+            "median": 5.3052985,
+            "min": 5.0510405,
+            "p20": 5.159157,
+            "p80": 5.9930525
+          }
+        },
+        "native_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 11.941887855529785,
+            "median": 6.968319892883301,
+            "min": 6.6087517738342285,
+            "p20": 6.776832103729248,
+            "p80": 9.673727989196777
+          },
+          "host_enqueue_us_per_call": {
+            "max": 9.5600355,
+            "median": 7.4513275000000005,
+            "min": 7.1340735,
+            "p20": 7.1991819999999995,
+            "p80": 8.5387235
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 9.6064565,
+            "median": 7.8030315,
+            "min": 7.1912735,
+            "p20": 7.2612025000000004,
+            "p80": 8.814540000000001
+          }
+        }
+      }
+    },
+    "128": {
+      "cache_shape": [
+        256,
+        2,
+        16,
+        2,
+        64
+      ],
+      "cache_stride": [
+        4096,
+        2048,
+        128,
+        64,
+        1
+      ],
+      "correctness": "bitwise_equal",
+      "input_shape": [
+        128,
+        2,
+        64
+      ],
+      "input_stride": [
+        1152,
+        64,
+        1
+      ],
+      "iterations": 2000,
+      "raw_rounds": {
+        "custom_direct": [
+          {
+            "device_timeline_us_per_call": 3.779792070388794,
+            "host_enqueue_us_per_call": 2.579958,
+            "wall_with_final_sync_us_per_call": 4.054591
+          },
+          {
+            "device_timeline_us_per_call": 3.338239908218384,
+            "host_enqueue_us_per_call": 2.50537,
+            "wall_with_final_sync_us_per_call": 4.2704445
+          },
+          {
+            "device_timeline_us_per_call": 5.439568042755127,
+            "host_enqueue_us_per_call": 2.480887,
+            "wall_with_final_sync_us_per_call": 3.7359285
+          },
+          {
+            "device_timeline_us_per_call": 3.4257919788360596,
+            "host_enqueue_us_per_call": 3.3125614999999997,
+            "wall_with_final_sync_us_per_call": 4.0237155
+          },
+          {
+            "device_timeline_us_per_call": 3.458559989929199,
+            "host_enqueue_us_per_call": 2.626541,
+            "wall_with_final_sync_us_per_call": 4.585694999999999
+          },
+          {
+            "device_timeline_us_per_call": 4.25984001159668,
+            "host_enqueue_us_per_call": 2.5052615,
+            "wall_with_final_sync_us_per_call": 3.615245
+          },
+          {
+            "device_timeline_us_per_call": 3.6854240894317627,
+            "host_enqueue_us_per_call": 2.819862,
+            "wall_with_final_sync_us_per_call": 4.0635825
+          }
+        ],
+        "custom_python_path": [
+          {
+            "device_timeline_us_per_call": 5.593728065490723,
+            "host_enqueue_us_per_call": 5.346194499999999,
+            "wall_with_final_sync_us_per_call": 5.388932
+          },
+          {
+            "device_timeline_us_per_call": 4.933216094970703,
+            "host_enqueue_us_per_call": 5.538595,
+            "wall_with_final_sync_us_per_call": 5.7509825
+          },
+          {
+            "device_timeline_us_per_call": 5.436927795410156,
+            "host_enqueue_us_per_call": 5.7536365,
+            "wall_with_final_sync_us_per_call": 5.9957614999999995
+          },
+          {
+            "device_timeline_us_per_call": 4.979040145874023,
+            "host_enqueue_us_per_call": 5.471753,
+            "wall_with_final_sync_us_per_call": 5.517849
+          },
+          {
+            "device_timeline_us_per_call": 5.809088230133057,
+            "host_enqueue_us_per_call": 5.293328499999999,
+            "wall_with_final_sync_us_per_call": 5.3532365
+          },
+          {
+            "device_timeline_us_per_call": 4.826111793518066,
+            "host_enqueue_us_per_call": 5.4078365,
+            "wall_with_final_sync_us_per_call": 5.824649
+          },
+          {
+            "device_timeline_us_per_call": 4.791007995605469,
+            "host_enqueue_us_per_call": 6.060761,
+            "wall_with_final_sync_us_per_call": 6.1072905
+          }
+        ],
+        "native_direct": [
+          {
+            "device_timeline_us_per_call": 5.28115177154541,
+            "host_enqueue_us_per_call": 5.977182,
+            "wall_with_final_sync_us_per_call": 6.6173235
+          },
+          {
+            "device_timeline_us_per_call": 5.422080039978027,
+            "host_enqueue_us_per_call": 5.930274000000001,
+            "wall_with_final_sync_us_per_call": 6.0527445
+          },
+          {
+            "device_timeline_us_per_call": 8.230400085449219,
+            "host_enqueue_us_per_call": 9.3416355,
+            "wall_with_final_sync_us_per_call": 9.405119000000001
+          },
+          {
+            "device_timeline_us_per_call": 5.325823783874512,
+            "host_enqueue_us_per_call": 4.782157,
+            "wall_with_final_sync_us_per_call": 5.260936
+          },
+          {
+            "device_timeline_us_per_call": 4.500688076019287,
+            "host_enqueue_us_per_call": 5.285528,
+            "wall_with_final_sync_us_per_call": 5.787924
+          },
+          {
+            "device_timeline_us_per_call": 4.784512042999268,
+            "host_enqueue_us_per_call": 4.889949,
+            "wall_with_final_sync_us_per_call": 5.140957
+          },
+          {
+            "device_timeline_us_per_call": 4.933631896972656,
+            "host_enqueue_us_per_call": 5.3192200000000005,
+            "wall_with_final_sync_us_per_call": 5.4082155
+          }
+        ],
+        "native_python_path": [
+          {
+            "device_timeline_us_per_call": 6.800384044647217,
+            "host_enqueue_us_per_call": 8.120502499999999,
+            "wall_with_final_sync_us_per_call": 8.1997485
+          },
+          {
+            "device_timeline_us_per_call": 7.52020788192749,
+            "host_enqueue_us_per_call": 7.6247695,
+            "wall_with_final_sync_us_per_call": 7.6826194999999995
+          },
+          {
+            "device_timeline_us_per_call": 6.845952033996582,
+            "host_enqueue_us_per_call": 7.300148500000001,
+            "wall_with_final_sync_us_per_call": 7.473806499999999
+          },
+          {
+            "device_timeline_us_per_call": 6.6638078689575195,
+            "host_enqueue_us_per_call": 7.711111,
+            "wall_with_final_sync_us_per_call": 7.8783235000000005
+          },
+          {
+            "device_timeline_us_per_call": 6.455632209777832,
+            "host_enqueue_us_per_call": 7.3483564999999995,
+            "wall_with_final_sync_us_per_call": 7.399219
+          },
+          {
+            "device_timeline_us_per_call": 6.970880031585693,
+            "host_enqueue_us_per_call": 7.361465,
+            "wall_with_final_sync_us_per_call": 7.4133024999999995
+          },
+          {
+            "device_timeline_us_per_call": 6.638591766357422,
+            "host_enqueue_us_per_call": 7.2682985,
+            "wall_with_final_sync_us_per_call": 7.3141774999999996
+          }
+        ]
+      },
+      "summary": {
+        "custom_direct": {
+          "device_timeline_us_per_call": {
+            "max": 5.439568042755127,
+            "median": 3.6854240894317627,
+            "min": 3.338239908218384,
+            "p20": 3.4257919788360596,
+            "p80": 4.25984001159668
+          },
+          "host_enqueue_us_per_call": {
+            "max": 3.3125614999999997,
+            "median": 2.579958,
+            "min": 2.480887,
+            "p20": 2.5052615,
+            "p80": 2.819862
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 4.585694999999999,
+            "median": 4.054591,
+            "min": 3.615245,
+            "p20": 3.7359285,
+            "p80": 4.2704445
+          }
+        },
+        "custom_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 5.809088230133057,
+            "median": 4.979040145874023,
+            "min": 4.791007995605469,
+            "p20": 4.826111793518066,
+            "p80": 5.593728065490723
+          },
+          "host_enqueue_us_per_call": {
+            "max": 6.060761,
+            "median": 5.471753,
+            "min": 5.293328499999999,
+            "p20": 5.346194499999999,
+            "p80": 5.7536365
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 6.1072905,
+            "median": 5.7509825,
+            "min": 5.3532365,
+            "p20": 5.388932,
+            "p80": 5.9957614999999995
+          }
+        },
+        "native_direct": {
+          "device_timeline_us_per_call": {
+            "max": 8.230400085449219,
+            "median": 5.28115177154541,
+            "min": 4.500688076019287,
+            "p20": 4.784512042999268,
+            "p80": 5.422080039978027
+          },
+          "host_enqueue_us_per_call": {
+            "max": 9.3416355,
+            "median": 5.3192200000000005,
+            "min": 4.782157,
+            "p20": 4.889949,
+            "p80": 5.977182
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 9.405119000000001,
+            "median": 5.787924,
+            "min": 5.140957,
+            "p20": 5.260936,
+            "p80": 6.6173235
+          }
+        },
+        "native_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 7.52020788192749,
+            "median": 6.800384044647217,
+            "min": 6.455632209777832,
+            "p20": 6.638591766357422,
+            "p80": 6.970880031585693
+          },
+          "host_enqueue_us_per_call": {
+            "max": 8.120502499999999,
+            "median": 7.361465,
+            "min": 7.2682985,
+            "p20": 7.300148500000001,
+            "p80": 7.711111
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 8.1997485,
+            "median": 7.473806499999999,
+            "min": 7.3141774999999996,
+            "p20": 7.399219,
+            "p80": 7.8783235000000005
+          }
+        }
+      }
+    },
+    "129": {
+      "cache_shape": [
+        256,
+        2,
+        16,
+        2,
+        64
+      ],
+      "cache_stride": [
+        4096,
+        2048,
+        128,
+        64,
+        1
+      ],
+      "correctness": "bitwise_equal",
+      "input_shape": [
+        129,
+        2,
+        64
+      ],
+      "input_stride": [
+        1152,
+        64,
+        1
+      ],
+      "iterations": 2000,
+      "raw_rounds": {
+        "custom_direct": [
+          {
+            "device_timeline_us_per_call": 3.2977919578552246,
+            "host_enqueue_us_per_call": 2.871537,
+            "wall_with_final_sync_us_per_call": 4.2824160000000004
+          },
+          {
+            "device_timeline_us_per_call": 3.6771841049194336,
+            "host_enqueue_us_per_call": 2.5872159999999997,
+            "wall_with_final_sync_us_per_call": 3.676995
+          },
+          {
+            "device_timeline_us_per_call": 4.045904159545898,
+            "host_enqueue_us_per_call": 2.4272620000000003,
+            "wall_with_final_sync_us_per_call": 4.027941
+          },
+          {
+            "device_timeline_us_per_call": 3.5968000888824463,
+            "host_enqueue_us_per_call": 3.011774,
+            "wall_with_final_sync_us_per_call": 3.8179364999999996
+          },
+          {
+            "device_timeline_us_per_call": 3.5922560691833496,
+            "host_enqueue_us_per_call": 2.4231455,
+            "wall_with_final_sync_us_per_call": 4.028645
+          },
+          {
+            "device_timeline_us_per_call": 4.3473920822143555,
+            "host_enqueue_us_per_call": 2.559483,
+            "wall_with_final_sync_us_per_call": 4.013695
+          },
+          {
+            "device_timeline_us_per_call": 3.4360320568084717,
+            "host_enqueue_us_per_call": 2.931012,
+            "wall_with_final_sync_us_per_call": 3.7795864999999997
+          }
+        ],
+        "custom_python_path": [
+          {
+            "device_timeline_us_per_call": 6.170720100402832,
+            "host_enqueue_us_per_call": 5.783753,
+            "wall_with_final_sync_us_per_call": 5.862944499999999
+          },
+          {
+            "device_timeline_us_per_call": 6.328224182128906,
+            "host_enqueue_us_per_call": 5.3120155,
+            "wall_with_final_sync_us_per_call": 5.3558905
+          },
+          {
+            "device_timeline_us_per_call": 6.528143882751465,
+            "host_enqueue_us_per_call": 5.5554945,
+            "wall_with_final_sync_us_per_call": 5.7078655
+          },
+          {
+            "device_timeline_us_per_call": 8.267231941223145,
+            "host_enqueue_us_per_call": 5.330378,
+            "wall_with_final_sync_us_per_call": 5.5303615
+          },
+          {
+            "device_timeline_us_per_call": 8.983407974243164,
+            "host_enqueue_us_per_call": 9.039927,
+            "wall_with_final_sync_us_per_call": 9.094202
+          },
+          {
+            "device_timeline_us_per_call": 7.315328121185303,
+            "host_enqueue_us_per_call": 5.5531115,
+            "wall_with_final_sync_us_per_call": 6.166603
+          },
+          {
+            "device_timeline_us_per_call": 6.673471927642822,
+            "host_enqueue_us_per_call": 5.6242865,
+            "wall_with_final_sync_us_per_call": 5.786678
+          }
+        ],
+        "native_direct": [
+          {
+            "device_timeline_us_per_call": 4.995535850524902,
+            "host_enqueue_us_per_call": 5.014694499999999,
+            "wall_with_final_sync_us_per_call": 5.352153
+          },
+          {
+            "device_timeline_us_per_call": 5.035007953643799,
+            "host_enqueue_us_per_call": 8.410294,
+            "wall_with_final_sync_us_per_call": 8.629940000000001
+          },
+          {
+            "device_timeline_us_per_call": 4.999135971069336,
+            "host_enqueue_us_per_call": 4.902136499999999,
+            "wall_with_final_sync_us_per_call": 5.521478
+          },
+          {
+            "device_timeline_us_per_call": 4.428287982940674,
+            "host_enqueue_us_per_call": 5.9718735,
+            "wall_with_final_sync_us_per_call": 6.0249025000000005
+          },
+          {
+            "device_timeline_us_per_call": 5.171199798583984,
+            "host_enqueue_us_per_call": 4.8961239999999995,
+            "wall_with_final_sync_us_per_call": 5.4593490000000005
+          },
+          {
+            "device_timeline_us_per_call": 5.424543857574463,
+            "host_enqueue_us_per_call": 5.837810999999999,
+            "wall_with_final_sync_us_per_call": 5.9890985
+          },
+          {
+            "device_timeline_us_per_call": 10.02342414855957,
+            "host_enqueue_us_per_call": 5.778065499999999,
+            "wall_with_final_sync_us_per_call": 6.288857
+          }
+        ],
+        "native_python_path": [
+          {
+            "device_timeline_us_per_call": 7.189504146575928,
+            "host_enqueue_us_per_call": 11.886059999999999,
+            "wall_with_final_sync_us_per_call": 11.94326
+          },
+          {
+            "device_timeline_us_per_call": 7.080448150634766,
+            "host_enqueue_us_per_call": 7.2920235,
+            "wall_with_final_sync_us_per_call": 7.3395815
+          },
+          {
+            "device_timeline_us_per_call": 7.027711868286133,
+            "host_enqueue_us_per_call": 7.696757,
+            "wall_with_final_sync_us_per_call": 7.7466445
+          },
+          {
+            "device_timeline_us_per_call": 6.574079990386963,
+            "host_enqueue_us_per_call": 8.549069,
+            "wall_with_final_sync_us_per_call": 9.0061815
+          },
+          {
+            "device_timeline_us_per_call": 7.145984172821045,
+            "host_enqueue_us_per_call": 7.4278735,
+            "wall_with_final_sync_us_per_call": 7.539890000000001
+          },
+          {
+            "device_timeline_us_per_call": 8.558591842651367,
+            "host_enqueue_us_per_call": 11.788235,
+            "wall_with_final_sync_us_per_call": 11.8638515
+          },
+          {
+            "device_timeline_us_per_call": 8.972288131713867,
+            "host_enqueue_us_per_call": 8.4954985,
+            "wall_with_final_sync_us_per_call": 8.544736
+          }
+        ]
+      },
+      "summary": {
+        "custom_direct": {
+          "device_timeline_us_per_call": {
+            "max": 4.3473920822143555,
+            "median": 3.5968000888824463,
+            "min": 3.2977919578552246,
+            "p20": 3.4360320568084717,
+            "p80": 4.045904159545898
+          },
+          "host_enqueue_us_per_call": {
+            "max": 3.011774,
+            "median": 2.5872159999999997,
+            "min": 2.4231455,
+            "p20": 2.4272620000000003,
+            "p80": 2.931012
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 4.2824160000000004,
+            "median": 4.013695,
+            "min": 3.676995,
+            "p20": 3.7795864999999997,
+            "p80": 4.028645
+          }
+        },
+        "custom_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 8.983407974243164,
+            "median": 6.673471927642822,
+            "min": 6.170720100402832,
+            "p20": 6.328224182128906,
+            "p80": 8.267231941223145
+          },
+          "host_enqueue_us_per_call": {
+            "max": 9.039927,
+            "median": 5.5554945,
+            "min": 5.3120155,
+            "p20": 5.330378,
+            "p80": 5.783753
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 9.094202,
+            "median": 5.786678,
+            "min": 5.3558905,
+            "p20": 5.5303615,
+            "p80": 6.166603
+          }
+        },
+        "native_direct": {
+          "device_timeline_us_per_call": {
+            "max": 10.02342414855957,
+            "median": 5.035007953643799,
+            "min": 4.428287982940674,
+            "p20": 4.995535850524902,
+            "p80": 5.424543857574463
+          },
+          "host_enqueue_us_per_call": {
+            "max": 8.410294,
+            "median": 5.778065499999999,
+            "min": 4.8961239999999995,
+            "p20": 4.902136499999999,
+            "p80": 5.9718735
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 8.629940000000001,
+            "median": 5.9890985,
+            "min": 5.352153,
+            "p20": 5.4593490000000005,
+            "p80": 6.288857
+          }
+        },
+        "native_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 8.972288131713867,
+            "median": 7.145984172821045,
+            "min": 6.574079990386963,
+            "p20": 7.027711868286133,
+            "p80": 8.558591842651367
+          },
+          "host_enqueue_us_per_call": {
+            "max": 11.886059999999999,
+            "median": 8.4954985,
+            "min": 7.2920235,
+            "p20": 7.4278735,
+            "p80": 11.788235
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 11.94326,
+            "median": 8.544736,
+            "min": 7.3395815,
+            "p20": 7.539890000000001,
+            "p80": 11.8638515
+          }
+        }
+      }
+    },
+    "2": {
+      "cache_shape": [
+        256,
+        2,
+        16,
+        2,
+        64
+      ],
+      "cache_stride": [
+        4096,
+        2048,
+        128,
+        64,
+        1
+      ],
+      "correctness": "bitwise_equal",
+      "input_shape": [
+        2,
+        2,
+        64
+      ],
+      "input_stride": [
+        1152,
+        64,
+        1
+      ],
+      "iterations": 2000,
+      "raw_rounds": {
+        "custom_direct": [
+          {
+            "device_timeline_us_per_call": 3.077631950378418,
+            "host_enqueue_us_per_call": 2.5343495,
+            "wall_with_final_sync_us_per_call": 4.7854075
+          },
+          {
+            "device_timeline_us_per_call": 3.1896960735321045,
+            "host_enqueue_us_per_call": 2.399095,
+            "wall_with_final_sync_us_per_call": 3.828553
+          },
+          {
+            "device_timeline_us_per_call": 3.881983995437622,
+            "host_enqueue_us_per_call": 2.4705415,
+            "wall_with_final_sync_us_per_call": 3.3712245
+          },
+          {
+            "device_timeline_us_per_call": 3.403775930404663,
+            "host_enqueue_us_per_call": 2.4980575,
+            "wall_with_final_sync_us_per_call": 3.9203655
+          },
+          {
+            "device_timeline_us_per_call": 3.1252479553222656,
+            "host_enqueue_us_per_call": 2.504016,
+            "wall_with_final_sync_us_per_call": 3.382545
+          },
+          {
+            "device_timeline_us_per_call": 3.4635839462280273,
+            "host_enqueue_us_per_call": 2.6779995,
+            "wall_with_final_sync_us_per_call": 3.3276745
+          },
+          {
+            "device_timeline_us_per_call": 2.6664960384368896,
+            "host_enqueue_us_per_call": 2.3930285,
+            "wall_with_final_sync_us_per_call": 2.8150410000000003
+          }
+        ],
+        "custom_python_path": [
+          {
+            "device_timeline_us_per_call": 5.8521599769592285,
+            "host_enqueue_us_per_call": 5.434974,
+            "wall_with_final_sync_us_per_call": 5.4779279999999995
+          },
+          {
+            "device_timeline_us_per_call": 4.863999843597412,
+            "host_enqueue_us_per_call": 6.118503,
+            "wall_with_final_sync_us_per_call": 6.596198500000001
+          },
+          {
+            "device_timeline_us_per_call": 4.872640132904053,
+            "host_enqueue_us_per_call": 5.4523615,
+            "wall_with_final_sync_us_per_call": 5.498728
+          },
+          {
+            "device_timeline_us_per_call": 8.192000389099121,
+            "host_enqueue_us_per_call": 5.294249,
+            "wall_with_final_sync_us_per_call": 5.3353075
+          },
+          {
+            "device_timeline_us_per_call": 5.311999797821045,
+            "host_enqueue_us_per_call": 5.538595,
+            "wall_with_final_sync_us_per_call": 5.5805195
+          },
+          {
+            "device_timeline_us_per_call": 5.743103981018066,
+            "host_enqueue_us_per_call": 5.3290235,
+            "wall_with_final_sync_us_per_call": 5.82649
+          },
+          {
+            "device_timeline_us_per_call": 4.892672061920166,
+            "host_enqueue_us_per_call": 5.4874615,
+            "wall_with_final_sync_us_per_call": 5.531499
+          }
+        ],
+        "native_direct": [
+          {
+            "device_timeline_us_per_call": 6.752064228057861,
+            "host_enqueue_us_per_call": 4.9961155,
+            "wall_with_final_sync_us_per_call": 5.072978
+          },
+          {
+            "device_timeline_us_per_call": 5.4620161056518555,
+            "host_enqueue_us_per_call": 5.097353,
+            "wall_with_final_sync_us_per_call": 5.161595
+          },
+          {
+            "device_timeline_us_per_call": 4.809120178222656,
+            "host_enqueue_us_per_call": 5.066045,
+            "wall_with_final_sync_us_per_call": 5.8401405
+          },
+          {
+            "device_timeline_us_per_call": 5.735360145568848,
+            "host_enqueue_us_per_call": 6.04099,
+            "wall_with_final_sync_us_per_call": 6.0954274999999996
+          },
+          {
+            "device_timeline_us_per_call": 5.280767917633057,
+            "host_enqueue_us_per_call": 8.2135065,
+            "wall_with_final_sync_us_per_call": 8.836965
+          },
+          {
+            "device_timeline_us_per_call": 7.865856170654297,
+            "host_enqueue_us_per_call": 4.905874,
+            "wall_with_final_sync_us_per_call": 4.9545699999999995
+          },
+          {
+            "device_timeline_us_per_call": 4.475840091705322,
+            "host_enqueue_us_per_call": 5.218524,
+            "wall_with_final_sync_us_per_call": 5.3702445
+          }
+        ],
+        "native_python_path": [
+          {
+            "device_timeline_us_per_call": 6.649856090545654,
+            "host_enqueue_us_per_call": 7.0950195,
+            "wall_with_final_sync_us_per_call": 7.7245445
+          },
+          {
+            "device_timeline_us_per_call": 9.817487716674805,
+            "host_enqueue_us_per_call": 7.464382,
+            "wall_with_final_sync_us_per_call": 8.101544
+          },
+          {
+            "device_timeline_us_per_call": 7.24832010269165,
+            "host_enqueue_us_per_call": 7.195607,
+            "wall_with_final_sync_us_per_call": 7.710948500000001
+          },
+          {
+            "device_timeline_us_per_call": 6.930943965911865,
+            "host_enqueue_us_per_call": 7.1380275,
+            "wall_with_final_sync_us_per_call": 7.185532
+          },
+          {
+            "device_timeline_us_per_call": 6.69593620300293,
+            "host_enqueue_us_per_call": 7.5290025,
+            "wall_with_final_sync_us_per_call": 7.5751525
+          },
+          {
+            "device_timeline_us_per_call": 6.602752208709717,
+            "host_enqueue_us_per_call": 7.225778,
+            "wall_with_final_sync_us_per_call": 7.4830695
+          },
+          {
+            "device_timeline_us_per_call": 9.175040245056152,
+            "host_enqueue_us_per_call": 7.2571945,
+            "wall_with_final_sync_us_per_call": 7.427115
+          }
+        ]
+      },
+      "summary": {
+        "custom_direct": {
+          "device_timeline_us_per_call": {
+            "max": 3.881983995437622,
+            "median": 3.1896960735321045,
+            "min": 2.6664960384368896,
+            "p20": 3.077631950378418,
+            "p80": 3.4635839462280273
+          },
+          "host_enqueue_us_per_call": {
+            "max": 2.6779995,
+            "median": 2.4980575,
+            "min": 2.3930285,
+            "p20": 2.399095,
+            "p80": 2.5343495
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 4.7854075,
+            "median": 3.382545,
+            "min": 2.8150410000000003,
+            "p20": 3.3276745,
+            "p80": 3.9203655
+          }
+        },
+        "custom_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 8.192000389099121,
+            "median": 5.311999797821045,
+            "min": 4.863999843597412,
+            "p20": 4.872640132904053,
+            "p80": 5.8521599769592285
+          },
+          "host_enqueue_us_per_call": {
+            "max": 6.118503,
+            "median": 5.4523615,
+            "min": 5.294249,
+            "p20": 5.3290235,
+            "p80": 5.538595
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 6.596198500000001,
+            "median": 5.531499,
+            "min": 5.3353075,
+            "p20": 5.4779279999999995,
+            "p80": 5.82649
+          }
+        },
+        "native_direct": {
+          "device_timeline_us_per_call": {
+            "max": 7.865856170654297,
+            "median": 5.4620161056518555,
+            "min": 4.475840091705322,
+            "p20": 4.809120178222656,
+            "p80": 6.752064228057861
+          },
+          "host_enqueue_us_per_call": {
+            "max": 8.2135065,
+            "median": 5.097353,
+            "min": 4.905874,
+            "p20": 4.9961155,
+            "p80": 6.04099
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 8.836965,
+            "median": 5.3702445,
+            "min": 4.9545699999999995,
+            "p20": 5.072978,
+            "p80": 6.0954274999999996
+          }
+        },
+        "native_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 9.817487716674805,
+            "median": 6.930943965911865,
+            "min": 6.602752208709717,
+            "p20": 6.649856090545654,
+            "p80": 9.175040245056152
+          },
+          "host_enqueue_us_per_call": {
+            "max": 7.5290025,
+            "median": 7.225778,
+            "min": 7.0950195,
+            "p20": 7.1380275,
+            "p80": 7.464382
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 8.101544,
+            "median": 7.5751525,
+            "min": 7.185532,
+            "p20": 7.427115,
+            "p80": 7.7245445
+          }
+        }
+      }
+    },
+    "2048": {
+      "cache_shape": [
+        256,
+        2,
+        16,
+        2,
+        64
+      ],
+      "cache_stride": [
+        4096,
+        2048,
+        128,
+        64,
+        1
+      ],
+      "correctness": "bitwise_equal",
+      "input_shape": [
+        2048,
+        2,
+        64
+      ],
+      "input_stride": [
+        1152,
+        64,
+        1
+      ],
+      "iterations": 500,
+      "raw_rounds": {
+        "custom_direct": [
+          {
+            "device_timeline_us_per_call": 5.400383949279785,
+            "host_enqueue_us_per_call": 3.150334,
+            "wall_with_final_sync_us_per_call": 7.464816
+          },
+          {
+            "device_timeline_us_per_call": 5.238783836364746,
+            "host_enqueue_us_per_call": 2.4730320000000003,
+            "wall_with_final_sync_us_per_call": 6.297198000000001
+          },
+          {
+            "device_timeline_us_per_call": 4.440063953399658,
+            "host_enqueue_us_per_call": 2.8626,
+            "wall_with_final_sync_us_per_call": 6.295248
+          },
+          {
+            "device_timeline_us_per_call": 4.917247772216797,
+            "host_enqueue_us_per_call": 4.887131999999999,
+            "wall_with_final_sync_us_per_call": 5.148432
+          },
+          {
+            "device_timeline_us_per_call": 6.842304229736328,
+            "host_enqueue_us_per_call": 2.492966,
+            "wall_with_final_sync_us_per_call": 5.314832
+          },
+          {
+            "device_timeline_us_per_call": 5.215680122375488,
+            "host_enqueue_us_per_call": 4.667432,
+            "wall_with_final_sync_us_per_call": 8.995348
+          },
+          {
+            "device_timeline_us_per_call": 5.347328186035156,
+            "host_enqueue_us_per_call": 2.545832,
+            "wall_with_final_sync_us_per_call": 7.240782
+          }
+        ],
+        "custom_python_path": [
+          {
+            "device_timeline_us_per_call": 7.059455871582031,
+            "host_enqueue_us_per_call": 5.516332,
+            "wall_with_final_sync_us_per_call": 7.197232
+          },
+          {
+            "device_timeline_us_per_call": 5.181632041931152,
+            "host_enqueue_us_per_call": 5.438982,
+            "wall_with_final_sync_us_per_call": 5.62835
+          },
+          {
+            "device_timeline_us_per_call": 4.954944133758545,
+            "host_enqueue_us_per_call": 5.4262,
+            "wall_with_final_sync_us_per_call": 6.1039319999999995
+          },
+          {
+            "device_timeline_us_per_call": 7.004415988922119,
+            "host_enqueue_us_per_call": 7.604782,
+            "wall_with_final_sync_us_per_call": 11.270564
+          },
+          {
+            "device_timeline_us_per_call": 5.062655925750732,
+            "host_enqueue_us_per_call": 5.459348,
+            "wall_with_final_sync_us_per_call": 8.52843
+          },
+          {
+            "device_timeline_us_per_call": 7.106560230255127,
+            "host_enqueue_us_per_call": 5.587832000000001,
+            "wall_with_final_sync_us_per_call": 9.343964
+          },
+          {
+            "device_timeline_us_per_call": 5.146944046020508,
+            "host_enqueue_us_per_call": 6.715582,
+            "wall_with_final_sync_us_per_call": 7.617132
+          }
+        ],
+        "native_direct": [
+          {
+            "device_timeline_us_per_call": 13.114239692687988,
+            "host_enqueue_us_per_call": 5.945766,
+            "wall_with_final_sync_us_per_call": 15.42493
+          },
+          {
+            "device_timeline_us_per_call": 15.249407768249512,
+            "host_enqueue_us_per_call": 5.294466000000001,
+            "wall_with_final_sync_us_per_call": 11.472716
+          },
+          {
+            "device_timeline_us_per_call": 13.432831764221191,
+            "host_enqueue_us_per_call": 5.120916,
+            "wall_with_final_sync_us_per_call": 14.307364
+          },
+          {
+            "device_timeline_us_per_call": 14.022208213806152,
+            "host_enqueue_us_per_call": 8.235932,
+            "wall_with_final_sync_us_per_call": 18.119396000000002
+          },
+          {
+            "device_timeline_us_per_call": 11.943424224853516,
+            "host_enqueue_us_per_call": 5.665832,
+            "wall_with_final_sync_us_per_call": 15.527412
+          },
+          {
+            "device_timeline_us_per_call": 14.510080337524414,
+            "host_enqueue_us_per_call": 5.223832000000001,
+            "wall_with_final_sync_us_per_call": 11.53923
+          },
+          {
+            "device_timeline_us_per_call": 12.535360336303711,
+            "host_enqueue_us_per_call": 5.574398,
+            "wall_with_final_sync_us_per_call": 13.880314
+          }
+        ],
+        "native_python_path": [
+          {
+            "device_timeline_us_per_call": 13.123392105102539,
+            "host_enqueue_us_per_call": 7.804113999999999,
+            "wall_with_final_sync_us_per_call": 14.285914
+          },
+          {
+            "device_timeline_us_per_call": 12.935168266296387,
+            "host_enqueue_us_per_call": 7.655698,
+            "wall_with_final_sync_us_per_call": 15.097764
+          },
+          {
+            "device_timeline_us_per_call": 12.279808044433594,
+            "host_enqueue_us_per_call": 8.125648,
+            "wall_with_final_sync_us_per_call": 17.24103
+          },
+          {
+            "device_timeline_us_per_call": 13.817855834960938,
+            "host_enqueue_us_per_call": 8.815513999999999,
+            "wall_with_final_sync_us_per_call": 12.953846
+          },
+          {
+            "device_timeline_us_per_call": 13.133248329162598,
+            "host_enqueue_us_per_call": 8.32693,
+            "wall_with_final_sync_us_per_call": 13.67513
+          },
+          {
+            "device_timeline_us_per_call": 11.857919692993164,
+            "host_enqueue_us_per_call": 7.979832,
+            "wall_with_final_sync_us_per_call": 15.368164
+          },
+          {
+            "device_timeline_us_per_call": 9.973759651184082,
+            "host_enqueue_us_per_call": 7.544982,
+            "wall_with_final_sync_us_per_call": 16.379996
+          }
+        ]
+      },
+      "summary": {
+        "custom_direct": {
+          "device_timeline_us_per_call": {
+            "max": 6.842304229736328,
+            "median": 5.238783836364746,
+            "min": 4.440063953399658,
+            "p20": 4.917247772216797,
+            "p80": 5.400383949279785
+          },
+          "host_enqueue_us_per_call": {
+            "max": 4.887131999999999,
+            "median": 2.8626,
+            "min": 2.4730320000000003,
+            "p20": 2.492966,
+            "p80": 4.667432
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 8.995348,
+            "median": 6.297198000000001,
+            "min": 5.148432,
+            "p20": 5.314832,
+            "p80": 7.464816
+          }
+        },
+        "custom_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 7.106560230255127,
+            "median": 5.181632041931152,
+            "min": 4.954944133758545,
+            "p20": 5.062655925750732,
+            "p80": 7.059455871582031
+          },
+          "host_enqueue_us_per_call": {
+            "max": 7.604782,
+            "median": 5.516332,
+            "min": 5.4262,
+            "p20": 5.438982,
+            "p80": 6.715582
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 11.270564,
+            "median": 7.617132,
+            "min": 5.62835,
+            "p20": 6.1039319999999995,
+            "p80": 9.343964
+          }
+        },
+        "native_direct": {
+          "device_timeline_us_per_call": {
+            "max": 15.249407768249512,
+            "median": 13.432831764221191,
+            "min": 11.943424224853516,
+            "p20": 12.535360336303711,
+            "p80": 14.510080337524414
+          },
+          "host_enqueue_us_per_call": {
+            "max": 8.235932,
+            "median": 5.574398,
+            "min": 5.120916,
+            "p20": 5.223832000000001,
+            "p80": 5.945766
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 18.119396000000002,
+            "median": 14.307364,
+            "min": 11.472716,
+            "p20": 11.53923,
+            "p80": 15.527412
+          }
+        },
+        "native_python_path": {
+          "device_timeline_us_per_call": {
+            "max": 13.817855834960938,
+            "median": 12.935168266296387,
+            "min": 9.973759651184082,
+            "p20": 11.857919692993164,
+            "p80": 13.133248329162598
+          },
+          "host_enqueue_us_per_call": {
+            "max": 8.815513999999999,
+            "median": 7.979832,
+            "min": 7.544982,
+            "p20": 7.655698,
+            "p80": 8.32693
+          },
+          "wall_with_final_sync_us_per_call": {
+            "max": 17.24103,
+            "median": 15.097764,
+            "min": 12.953846,
+            "p20": 13.67513,
+            "p80": 16.379996
+          }
+        }
+      }
+    }
+  },
+  "schema_version": 1
+}
