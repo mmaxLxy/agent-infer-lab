@@ -1,0 +1,16 @@
+[build-system]
+requires = ["setuptools>=77"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "agent-infer-lab-vllm-append-plugin"
+version = "0.1.0"
+description = "Opt-in FP16 eager Append integration for local vLLM 0.23.0 experiments"
+requires-python = ">=3.12"
+dependencies = []
+
+[project.entry-points."vllm.general_plugins"]
+ail_append = "ail_vllm_append_plugin:register"
+
+[tool.setuptools]
+py-modules = ["ail_vllm_append_plugin"]
