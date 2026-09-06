@@ -1,0 +1,35 @@
+{
+  "purpose": "Current-config offline scale reproduction, not historical scale recovery or an accuracy score",
+  "engine_args": {
+    "model": "/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775",
+    "dtype": "half",
+    "kv_cache_dtype": "fp8",
+    "calculate_kv_scales": true,
+    "attention_backend": "FLASHINFER",
+    "max_model_len": 2048,
+    "gpu_memory_utilization": 0.65,
+    "max_num_seqs": 16,
+    "max_num_batched_tokens": 2048,
+    "block_size": 16,
+    "seed": 20260903,
+    "enforce_eager": true,
+    "enable_prefix_caching": false
+  },
+  "versions": {
+    "vllm": "0.23.0+cu129",
+    "torch": "2.11.0+cu129",
+    "transformers": "5.14.1"
+  },
+  "source_sha256": "194b41c721e6c7edef79ffc457ee9e650346879c8492fdafa06bc8c6b835f80e",
+  "input_sources": [
+    {
+      "path": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp16/warmup.json",
+      "sha256": "503b0880977c9d2c5b53a8ac35ebf0214e7066b6937f6f17c000507dd64f0413"
+    },
+    {
+      "path": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp16/measurement.json",
+      "sha256": "048a8ebf1984e20899b9623ab977fb06b6a29c81d6dc14bc49600e7a98f5a0a5"
+    }
+  ],
+  "caveat": "Offline batches of four reuse archived token IDs; HTTP arrival timing is not reproduced."
+}

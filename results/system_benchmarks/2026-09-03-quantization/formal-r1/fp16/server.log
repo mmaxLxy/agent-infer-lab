@@ -1,0 +1,2 @@
+nohup: ignoring input
+/home/ayax/.venvs/agent-infer-lab-dev/bin/python: Error while finding module specification for 'vllm.entrypoints.cli.main' (ModuleNotFoundError: No module named 'vllm')

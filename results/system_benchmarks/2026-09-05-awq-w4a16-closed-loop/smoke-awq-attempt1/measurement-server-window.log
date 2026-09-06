@@ -1,0 +1,17 @@
+(APIServer pid=416) INFO:     127.0.0.1:56648 - "POST /tokenize HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56649 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56650 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56651 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56652 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56653 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56654 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56655 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56656 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56657 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56658 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56659 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56660 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56661 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56662 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56663 - "POST /v1/completions HTTP/1.1" 200 OK
+(APIServer pid=416) INFO:     127.0.0.1:56664 - "POST /v1/completions HTTP/1.1" 200 OK

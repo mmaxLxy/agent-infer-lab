@@ -1,0 +1,9 @@
+python: /home/ayax/.venvs/agent-infer-lab/bin/python
+vllm: 0.23.0+cu129
+torch: 2.11.0+cu129
+transformers: 5.14.1
+safetensors: 0.8.0
+datasets: NOT_INSTALLED
+lm_eval: NOT_INSTALLED
+llmcompressor: NOT_INSTALLED
+compressed-tensors: 0.17.0

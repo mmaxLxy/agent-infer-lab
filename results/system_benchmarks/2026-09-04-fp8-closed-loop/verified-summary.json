@@ -1,0 +1,354 @@
+{
+  "scale_sha256": "e24064abcabf8bd2d54ca1a54a79c492c4ee3beba73374be631471a26c18c2da",
+  "performance": [
+    {
+      "round": 1,
+      "fp16": {
+        "output_throughput_tokens_per_second": 293.34804510905883,
+        "ttft_p50_seconds": 0.1150956519995816,
+        "tpot_p50_seconds": 0.011834595746034803,
+        "e2e_p50_seconds": 0.8680121859997598,
+        "kv_capacity_tokens": 362784,
+        "successful_requests": 160,
+        "gpu": {
+          "samples": 35,
+          "memory.used [MiB]": {
+            "min": 7436.0,
+            "median": 7436.0,
+            "max": 7436.0
+          },
+          "utilization.gpu [%]": {
+            "min": 39.0,
+            "median": 55.0,
+            "max": 99.0
+          },
+          "temperature.gpu": {
+            "min": 60.0,
+            "median": 63.0,
+            "max": 70.0
+          },
+          "clocks.current.graphics [MHz]": {
+            "min": 2595.0,
+            "median": 2655.0,
+            "max": 2655.0
+          }
+        },
+        "path": "performance-r1-fp16-attempt1"
+      },
+      "fp8": {
+        "output_throughput_tokens_per_second": 277.52910060668415,
+        "ttft_p50_seconds": 0.11563558600028045,
+        "tpot_p50_seconds": 0.012752122460311974,
+        "e2e_p50_seconds": 0.9183118889995967,
+        "kv_capacity_tokens": 725568,
+        "successful_requests": 160,
+        "gpu": {
+          "samples": 36,
+          "memory.used [MiB]": {
+            "min": 7432.0,
+            "median": 7438.0,
+            "max": 7443.0
+          },
+          "utilization.gpu [%]": {
+            "min": 47.0,
+            "median": 53.5,
+            "max": 99.0
+          },
+          "temperature.gpu": {
+            "min": 52.0,
+            "median": 56.0,
+            "max": 64.0
+          },
+          "clocks.current.graphics [MHz]": {
+            "min": 2625.0,
+            "median": 2655.0,
+            "max": 2655.0
+          }
+        },
+        "path": "performance-r1-fp8-attempt1"
+      },
+      "fp8_vs_fp16_percent": {
+        "output_throughput_tokens_per_second": -5.3925515325979445,
+        "ttft_p50_seconds": 0.46911763504395854,
+        "tpot_p50_seconds": 7.752919778308343,
+        "e2e_p50_seconds": 5.794815304568868
+      }
+    },
+    {
+      "round": 2,
+      "fp16": {
+        "output_throughput_tokens_per_second": 300.06808770840456,
+        "ttft_p50_seconds": 0.1503302450000774,
+        "tpot_p50_seconds": 0.011411752841244351,
+        "e2e_p50_seconds": 0.8505962680010271,
+        "kv_capacity_tokens": 362784,
+        "successful_requests": 160,
+        "gpu": {
+          "samples": 34,
+          "memory.used [MiB]": {
+            "min": 7431.0,
+            "median": 7436.0,
+            "max": 7441.0
+          },
+          "utilization.gpu [%]": {
+            "min": 48.0,
+            "median": 59.0,
+            "max": 99.0
+          },
+          "temperature.gpu": {
+            "min": 50.0,
+            "median": 54.0,
+            "max": 62.0
+          },
+          "clocks.current.graphics [MHz]": {
+            "min": 2625.0,
+            "median": 2655.0,
+            "max": 2670.0
+          }
+        },
+        "path": "performance-r2-fp16-attempt1"
+      },
+      "fp8": {
+        "output_throughput_tokens_per_second": 267.24843077686097,
+        "ttft_p50_seconds": 0.1525752380002814,
+        "tpot_p50_seconds": 0.013128930126994318,
+        "e2e_p50_seconds": 0.9665651039995282,
+        "kv_capacity_tokens": 725568,
+        "successful_requests": 160,
+        "gpu": {
+          "samples": 38,
+          "memory.used [MiB]": {
+            "min": 7438.0,
+            "median": 7439.0,
+            "max": 7439.0
+          },
+          "utilization.gpu [%]": {
+            "min": 41.0,
+            "median": 53.5,
+            "max": 99.0
+          },
+          "temperature.gpu": {
+            "min": 51.0,
+            "median": 56.5,
+            "max": 62.0
+          },
+          "clocks.current.graphics [MHz]": {
+            "min": 2625.0,
+            "median": 2655.0,
+            "max": 2655.0
+          }
+        },
+        "path": "performance-r2-fp8-attempt1"
+      },
+      "fp8_vs_fp16_percent": {
+        "output_throughput_tokens_per_second": -10.937403301425563,
+        "ttft_p50_seconds": 1.4933741378541754,
+        "tpot_p50_seconds": 15.04744546818213,
+        "e2e_p50_seconds": 13.633828452014928
+      }
+    },
+    {
+      "round": 3,
+      "fp16": {
+        "output_throughput_tokens_per_second": 279.508197065401,
+        "ttft_p50_seconds": 0.1539707770007226,
+        "tpot_p50_seconds": 0.01244736741269691,
+        "e2e_p50_seconds": 0.9186406480002915,
+        "kv_capacity_tokens": 362784,
+        "successful_requests": 160,
+        "gpu": {
+          "samples": 36,
+          "memory.used [MiB]": {
+            "min": 7436.0,
+            "median": 7436.0,
+            "max": 7436.0
+          },
+          "utilization.gpu [%]": {
+            "min": 42.0,
+            "median": 53.5,
+            "max": 97.0
+          },
+          "temperature.gpu": {
+            "min": 53.0,
+            "median": 54.0,
+            "max": 62.0
+          },
+          "clocks.current.graphics [MHz]": {
+            "min": 2640.0,
+            "median": 2655.0,
+            "max": 2670.0
+          }
+        },
+        "path": "performance-r3-fp16-attempt1"
+      },
+      "fp8": {
+        "output_throughput_tokens_per_second": 283.9198133674498,
+        "ttft_p50_seconds": 0.11707831000057922,
+        "tpot_p50_seconds": 0.012302061380949685,
+        "e2e_p50_seconds": 0.8906120579995331,
+        "kv_capacity_tokens": 725568,
+        "successful_requests": 160,
+        "gpu": {
+          "samples": 36,
+          "memory.used [MiB]": {
+            "min": 7439.0,
+            "median": 7439.0,
+            "max": 7439.0
+          },
+          "utilization.gpu [%]": {
+            "min": 39.0,
+            "median": 53.5,
+            "max": 99.0
+          },
+          "temperature.gpu": {
+            "min": 52.0,
+            "median": 54.0,
+            "max": 62.0
+          },
+          "clocks.current.graphics [MHz]": {
+            "min": 2625.0,
+            "median": 2655.0,
+            "max": 2670.0
+          }
+        },
+        "path": "performance-r3-fp8-attempt1"
+      },
+      "fp8_vs_fp16_percent": {
+        "output_throughput_tokens_per_second": 1.5783495254761748,
+        "ttft_p50_seconds": -23.960694177681674,
+        "tpot_p50_seconds": -1.167363563149959,
+        "e2e_p50_seconds": -3.051094033534374
+      }
+    }
+  ],
+  "quality": {
+    "fp16": {
+      "kind": "fp16",
+      "total": 200,
+      "success": 200,
+      "strict_correct": 5,
+      "flexible_correct": 92,
+      "length_truncated": 12,
+      "scale_sha256": "3f98c6d7eeeccb4c5ba68f22e395db4dc55c617ef76a81d1e6db475bb9dd1214"
+    },
+    "fp8": {
+      "kind": "fp8",
+      "total": 200,
+      "success": 200,
+      "strict_correct": 4,
+      "flexible_correct": 75,
+      "length_truncated": 13,
+      "scale_sha256": "e24064abcabf8bd2d54ca1a54a79c492c4ee3beba73374be631471a26c18c2da"
+    },
+    "strict_paired": {
+      "fp16_correct": 5,
+      "fp8_correct": 4,
+      "count": 200,
+      "difference_percentage_points": -0.5,
+      "fp16_wrong_fp8_correct": 3,
+      "fp16_correct_fp8_wrong": 4,
+      "paired_bootstrap_95_percentile_ci_pp": [
+        -3.0,
+        2.0
+      ],
+      "bootstrap_replicates": 20000,
+      "bootstrap_seed": 20260904,
+      "exact_mcnemar_two_sided_p": 1.0
+    },
+    "flexible_paired": {
+      "fp16_correct": 92,
+      "fp8_correct": 75,
+      "count": 200,
+      "difference_percentage_points": -8.5,
+      "fp16_wrong_fp8_correct": 14,
+      "fp16_correct_fp8_wrong": 31,
+      "paired_bootstrap_95_percentile_ci_pp": [
+        -15.0,
+        -2.0
+      ],
+      "bootstrap_replicates": 20000,
+      "bootstrap_seed": 20260904,
+      "exact_mcnemar_two_sided_p": 0.016094360031274846
+    }
+  },
+  "conditional_ppl": {
+    "fp16": {
+      "kind": "fp16",
+      "cases": 64,
+      "tokens": 5470,
+      "decode_tokens": 5406,
+      "nll": 5209.570799745721,
+      "decode_nll": 4549.869532980127,
+      "conditional_ppl": 2.591895711487913,
+      "decode_conditional_ppl": 2.3201533530356704,
+      "scale_sha256": "3f98c6d7eeeccb4c5ba68f22e395db4dc55c617ef76a81d1e6db475bb9dd1214",
+      "raw_logprob_validation": "passed"
+    },
+    "fp8": {
+      "kind": "fp8",
+      "cases": 64,
+      "tokens": 5470,
+      "decode_tokens": 5406,
+      "nll": 5276.799573247101,
+      "decode_nll": 4616.459157769348,
+      "conditional_ppl": 2.623947845965987,
+      "decode_conditional_ppl": 2.3489091046185857,
+      "scale_sha256": "e24064abcabf8bd2d54ca1a54a79c492c4ee3beba73374be631471a26c18c2da",
+      "raw_logprob_validation": "passed"
+    },
+    "fp8_vs_fp16_percent": {
+      "conditional_ppl": 1.2366290177498573,
+      "decode_conditional_ppl": 1.2393901267470753
+    }
+  },
+  "performance_summary": {
+    "output_throughput_tokens_per_second": {
+      "fp16_median": 293.34804510905883,
+      "fp8_median": 277.52910060668415,
+      "paired_change_percent_median": -5.3925515325979445,
+      "paired_change_percent_range": [
+        -10.937403301425563,
+        1.5783495254761748
+      ]
+    },
+    "ttft_p50_seconds": {
+      "fp16_median": 0.1503302450000774,
+      "fp8_median": 0.11707831000057922,
+      "paired_change_percent_median": 0.46911763504395854,
+      "paired_change_percent_range": [
+        -23.960694177681674,
+        1.4933741378541754
+      ]
+    },
+    "tpot_p50_seconds": {
+      "fp16_median": 0.011834595746034803,
+      "fp8_median": 0.012752122460311974,
+      "paired_change_percent_median": 7.752919778308343,
+      "paired_change_percent_range": [
+        -1.167363563149959,
+        15.04744546818213
+      ]
+    },
+    "e2e_p50_seconds": {
+      "fp16_median": 0.8680121859997598,
+      "fp8_median": 0.9183118889995967,
+      "paired_change_percent_median": 5.794815304568868,
+      "paired_change_percent_range": [
+        -3.051094033534374,
+        13.633828452014928
+      ]
+    }
+  },
+  "sources": [
+    "performance-r1-fp16-attempt1",
+    "performance-r1-fp8-attempt1",
+    "performance-r2-fp16-attempt1",
+    "performance-r2-fp8-attempt1",
+    "performance-r3-fp16-attempt1",
+    "performance-r3-fp8-attempt1",
+    "quality-r1-fp16-attempt1",
+    "ppl-fp16-final",
+    "quality-r1-fp8-attempt1",
+    "ppl-fp8-final"
+  ]
+}

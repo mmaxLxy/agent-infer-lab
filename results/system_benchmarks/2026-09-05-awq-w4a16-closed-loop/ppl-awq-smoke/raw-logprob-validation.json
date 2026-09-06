@@ -1,0 +1,9 @@
+{
+  "target": 1519,
+  "natural_logprob": -11.668926239013672,
+  "forced_logprob": -11.668926239013672,
+  "difference": 0.0,
+  "forced_token_ids": [
+    1519
+  ]
+}

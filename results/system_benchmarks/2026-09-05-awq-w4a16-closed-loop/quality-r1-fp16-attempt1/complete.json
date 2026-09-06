@@ -1,0 +1,8 @@
+{
+  "kind": "fp16",
+  "total": 200,
+  "success": 200,
+  "strict_correct": 5,
+  "flexible_correct": 90,
+  "length_truncated": 11
+}

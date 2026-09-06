@@ -1,0 +1,21 @@
+{
+  "kind": "fp16",
+  "result": {
+    "request_count": 160,
+    "total_output_tokens": 10240,
+    "duration_seconds": 37.82640762299991,
+    "output_throughput_tokens_per_second": 270.7103487610514,
+    "ttft_p50_seconds": 0.1306645759999583,
+    "ttft_p99_seconds": 0.24264065700003812,
+    "tpot_p50_seconds": 0.01267553701587343,
+    "tpot_p99_seconds": 0.015033651555555364,
+    "e2e_p50_seconds": 0.9456571680000252,
+    "e2e_p99_seconds": 1.0561916719999545
+  },
+  "success": 160,
+  "measurement_window": {
+    "start_line_exclusive": 120,
+    "end_line_inclusive": 284,
+    "errors": []
+  }
+}

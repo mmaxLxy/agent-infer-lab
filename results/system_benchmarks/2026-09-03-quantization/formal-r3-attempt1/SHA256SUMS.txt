@@ -1,0 +1,10 @@
+f5a7bec0ddcd9cae3623ad5b93d7034ba51d6f917a79e26848260500f4a334a3  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/launch.txt
+efa93905bde72224d7bece27e566b8494252ce6a185d91cc9df72e465be5b1c7  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/server.log
+9cb251bb316cabfa38583a0c7d3bdb427056581e923cbfd629ff47acc8b17299  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/warmup.json
+4a4f88298665b955e83f78d5f77d92387e39e2e8f510ab4c345136ac82b5f323  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/measurement.json
+60d79daf869b1fe1f050b7c0bab56a8af0130ff1137cc544a533c1687712c7ad  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/gpu-ready.csv
+9cd44c53941ab891279fb4013134bb1ce1d3058978e8972d0accdd13c8a65e8f  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/launch.txt
+e4dd7cf275e8597bb82d4c16975200e03eb82dba935a5b9fe1fedb1883538eb8  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/server.log
+787a4f052ca05ca8b05281f2a22725910bc19e0bb22336bbb402d5d18ab608fe  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/warmup.json
+20ec88b572cc1a866748c40b20d611c60053743bbcd2fe26b714668760a0b067  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/measurement.json
+9ec6f9044f98be1b0c30ac44c60a8a8935b5ee2b9497cf44b8630d3662d891f5  results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/gpu-ready.csv

@@ -1,0 +1,8 @@
+{
+  "kind": "awq",
+  "total": 200,
+  "success": 200,
+  "strict_correct": 1,
+  "flexible_correct": 62,
+  "length_truncated": 16
+}

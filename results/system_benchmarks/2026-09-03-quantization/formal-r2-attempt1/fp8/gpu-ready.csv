@@ -1,0 +1,2 @@
+timestamp, name, driver_version, memory.total [MiB], memory.used [MiB], utilization.gpu [%], temperature.gpu, pstate
+2026/09/03 21:03:51.813, NVIDIA GeForce RTX 4060, 581.57, 8188 MiB, 7450 MiB, 5 %, 47, P2

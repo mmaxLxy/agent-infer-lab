@@ -1,0 +1,13 @@
+531:    def calc_kv_scales(self, query, key, value):
+532-        self._q_scale.copy_(torch.abs(query).max() / self.q_range)
+533-        self._k_scale.copy_(torch.abs(key).max() / self.k_range)
+534-        self._v_scale.copy_(torch.abs(value).max() / self.v_range)
+535-        self._q_scale_float = self._q_scale.item()
+536-        self._k_scale_float = self._k_scale.item()
+537-        self._v_scale_float = self._v_scale.item()
+538-        # We only calculate the scales once
+539-        self.calculate_kv_scales = False
+540-
+541-    def extra_repr(self) -> str:
+542-        s = f"head_size={self.impl.head_size}"  # type: ignore
+543-        s += f", num_heads={self.impl.num_heads}"  # type: ignore

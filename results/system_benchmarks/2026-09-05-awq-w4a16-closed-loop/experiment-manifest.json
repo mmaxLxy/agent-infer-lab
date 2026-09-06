@@ -1,0 +1,33 @@
+{
+  "date": "2026-09-05",
+  "official_model": "Qwen/Qwen2.5-0.5B-Instruct-AWQ",
+  "official_commit": "7c05280e9583b6cace2dc9d8950e21bfd3d72c19",
+  "download_endpoint": "https://hf-mirror.com (official commit verified by X-Repo-Commit)",
+  "baseline_model": "/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775",
+  "awq_model": "/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct-AWQ/snapshots/7c05280e9583b6cace2dc9d8950e21bfd3d72c19",
+  "quantization_config": {
+    "bits": 4,
+    "group_size": 128,
+    "modules_to_not_convert": null,
+    "quant_method": "awq",
+    "version": "gemm",
+    "zero_point": true
+  },
+  "data_sha256": {
+    "LICENSE": "86bbb73e855821d7c401912fd4bf82e34313e6e3b6fd6f909f2b6cc9e209a53b",
+    "cases.json": "8cbe13d729c0311413b423e2ffb34a6baf5d450c530045b5e7dddfc149143a2e",
+    "manifest.json": "6ef5b46c5a2814c9b149ba5c7d7dea15a6d5cf9d74e9715abd26a3dbe509a2fd",
+    "test.jsonl": "3730d312f6e3440559ace48831e51066acaca737f6eabec99bccb9e4b3c39d14",
+    "train.jsonl": "17f347dc51477c50d4efb83959dbb7c56297aba886e5544ee2aaed3024813465"
+  },
+  "versions": {
+    "vllm": "0.23.0+cu129",
+    "torch": "2.11.0+cu129",
+    "transformers": "5.14.1",
+    "safetensors": "0.8.0"
+  },
+  "performance": "3 paired rounds; A-B/B-A/A-B; 32 warmup + 160 measured; C4, input1536, output64, prefix cache off",
+  "quality": "Same frozen 200 GSM8K samples and same extraction as FP8 experiment",
+  "conditional_ppl": "Same first 64 frozen samples; raw pre-processor teacher-forced logprobs",
+  "claim_policy": "Report measured values; do not reuse expected 65%/12%/8% claims"
+}

@@ -1,0 +1,21 @@
+{
+  "kind": "awq",
+  "result": {
+    "request_count": 16,
+    "total_output_tokens": 1024,
+    "duration_seconds": 4.283259903999991,
+    "output_throughput_tokens_per_second": 239.07024624952626,
+    "ttft_p50_seconds": 0.21024792200000775,
+    "ttft_p99_seconds": 0.341383086999997,
+    "tpot_p50_seconds": 0.013414666365079372,
+    "tpot_p99_seconds": 0.015681708063492047,
+    "e2e_p50_seconds": 1.0568349039999987,
+    "e2e_p99_seconds": 1.1865070679999974
+  },
+  "success": 16,
+  "measurement_window": {
+    "start_line_exclusive": 91,
+    "end_line_inclusive": 108,
+    "errors": []
+  }
+}

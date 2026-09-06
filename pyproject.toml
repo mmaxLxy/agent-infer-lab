@@ -31,3 +31,10 @@ line-length = 100
 
 [tool.ruff.lint]
 select = ["B", "E", "F", "I", "SIM", "UP"]
+
+[tool.ruff.lint.per-file-ignores]
+# Report generators contain long Markdown templates and protocol strings whose
+# source-line wrapping would make the emitted evidence harder to audit.
+"scripts/awq_closed_loop/*.py" = ["E501"]
+"scripts/fp8_closed_loop/*.py" = ["E501"]
+"scripts/fp8_closed_loop/fp8_runtime.py" = ["E402", "E501"]

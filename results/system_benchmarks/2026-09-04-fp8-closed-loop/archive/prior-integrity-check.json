@@ -1,0 +1,138 @@
+[
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/fp16-kv-smoke/server.log",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/fp16-kv-smoke/smoke.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/fp8-kv-smoke/server.log",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/fp8-kv-smoke/smoke.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp16/launch.txt",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp16/server.log",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp16/warmup.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp16/measurement.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp16/gpu-ready.csv",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp8/launch.txt",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp8/server.log",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp8/warmup.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp8/measurement.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r1-attempt3/fp8/gpu-ready.csv",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp16/launch.txt",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp16/server.log",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp16/warmup.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp16/measurement.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp16/gpu-ready.csv",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp8/launch.txt",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp8/server.log",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp8/warmup.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp8/measurement.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r2-attempt1/fp8/gpu-ready.csv",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/launch.txt",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/server.log",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/warmup.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/measurement.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp16/gpu-ready.csv",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/launch.txt",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/server.log",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/warmup.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/measurement.json",
+    "pass": true
+  },
+  {
+    "file": "/mnt/d/agent-infer-lab/results/system_benchmarks/2026-09-03-quantization/formal-r3-attempt1/fp8/gpu-ready.csv",
+    "pass": true
+  }
+]

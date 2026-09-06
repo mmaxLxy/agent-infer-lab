@@ -1,0 +1,27 @@
+{
+  "protocol": {
+    "command": [
+      "/home/ayax/.venvs/agent-infer-lab/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/mnt/d/agent-infer-lab/scripts/fp8_closed_loop",
+      "-p",
+      "test_protocol.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "test_no_overwrite (test_protocol.ProtocolTests.test_no_overwrite) ... ok\ntest_numeric_scoring (test_protocol.ProtocolTests.test_numeric_scoring) ... ok\ntest_scale_validation (test_protocol.ProtocolTests.test_scale_validation) ... ok\n\n----------------------------------------------------------------------\nRan 3 tests in 0.001s\n\nOK\n"
+  },
+  "runtime_cpu": {
+    "command": [
+      "/home/ayax/.venvs/agent-infer-lab/bin/python",
+      "/mnt/d/agent-infer-lab/scripts/fp8_closed_loop/runtime_cpu_checks.py"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "...\n----------------------------------------------------------------------\nRan 3 tests in 0.001s\n\nOK\n"
+  }
+}

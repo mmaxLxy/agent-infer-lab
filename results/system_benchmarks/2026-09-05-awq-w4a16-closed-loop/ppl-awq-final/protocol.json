@@ -1,0 +1,27 @@
+{
+  "kind": "awq",
+  "engine": {
+    "model": "/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct-AWQ/snapshots/7c05280e9583b6cace2dc9d8950e21bfd3d72c19",
+    "dtype": "half",
+    "kv_cache_dtype": "auto",
+    "attention_backend": "FLASHINFER",
+    "max_model_len": 2048,
+    "gpu_memory_utilization": 0.65,
+    "max_num_seqs": 16,
+    "max_num_batched_tokens": 2048,
+    "block_size": 16,
+    "seed": 20260905,
+    "enforce_eager": true,
+    "enable_prefix_caching": false,
+    "logits_processors": [
+      "awq_runtime:GoldContinuationProcessor"
+    ],
+    "logprobs_mode": "raw_logprobs",
+    "async_scheduling": false,
+    "quantization": "awq_marlin"
+  },
+  "limit": 64,
+  "metric": "GSM8K gold-solution conditional PPL; raw pre-processor logprobs",
+  "decode_metric": "Excludes each case's first target token",
+  "performance_measurement": false
+}

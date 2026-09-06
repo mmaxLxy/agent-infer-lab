@@ -1,0 +1,9 @@
+{
+  "kind": "fp16",
+  "total": 200,
+  "success": 200,
+  "strict_correct": 5,
+  "flexible_correct": 92,
+  "length_truncated": 12,
+  "scale_sha256": "3f98c6d7eeeccb4c5ba68f22e395db4dc55c617ef76a81d1e6db475bb9dd1214"
+}

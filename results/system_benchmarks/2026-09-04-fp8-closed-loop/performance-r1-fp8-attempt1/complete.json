@@ -1,0 +1,22 @@
+{
+  "kind": "fp8",
+  "result": {
+    "request_count": 160,
+    "total_output_tokens": 10240,
+    "duration_seconds": 36.897031618000256,
+    "output_throughput_tokens_per_second": 277.52910060668415,
+    "ttft_p50_seconds": 0.11563558600028045,
+    "ttft_p99_seconds": 0.20375619900005404,
+    "tpot_p50_seconds": 0.012752122460311974,
+    "tpot_p99_seconds": 0.014855682095234414,
+    "e2e_p50_seconds": 0.9183118889995967,
+    "e2e_p99_seconds": 1.0206823460011947
+  },
+  "success": 160,
+  "measurement_window": {
+    "start_line_exclusive": 143,
+    "end_line_inclusive": 308,
+    "errors": []
+  },
+  "scale_sha256": "e24064abcabf8bd2d54ca1a54a79c492c4ee3beba73374be631471a26c18c2da"
+}

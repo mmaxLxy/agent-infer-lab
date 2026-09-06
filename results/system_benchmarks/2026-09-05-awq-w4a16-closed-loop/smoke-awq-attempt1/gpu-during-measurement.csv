@@ -1,0 +1,7 @@
+timestamp, name, memory.used [MiB], utilization.gpu [%], temperature.gpu, pstate, clocks.current.graphics [MHz], clocks.current.memory [MHz], power.draw [W]
+2026/09/05 11:37:48.547, NVIDIA GeForce RTX 4060, 7147 MiB, 42 %, 57, P2, 2655 MHz, 8250 MHz, [N/A]
+2026/09/05 11:37:49.562, NVIDIA GeForce RTX 4060, 7151 MiB, 32 %, 55, P2, 2655 MHz, 8250 MHz, [N/A]
+2026/09/05 11:37:50.582, NVIDIA GeForce RTX 4060, 7151 MiB, 48 %, 57, P2, 2655 MHz, 8250 MHz, [N/A]
+2026/09/05 11:37:51.632, NVIDIA GeForce RTX 4060, 7151 MiB, 47 %, 58, P2, 2655 MHz, 8250 MHz, [N/A]
+2026/09/05 11:37:52.638, NVIDIA GeForce RTX 4060, 7151 MiB, 48 %, 58, P2, 2655 MHz, 8250 MHz, [N/A]
+2026/09/05 11:37:53.643, NVIDIA GeForce RTX 4060, 7151 MiB, 49 %, 59, P2, 2655 MHz, 8250 MHz, [N/A]

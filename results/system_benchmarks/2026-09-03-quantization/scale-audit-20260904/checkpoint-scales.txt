@@ -1,0 +1,3 @@
+file: model.safetensors
+scale_tensor_count: 0
+total_scale_tensors: 0

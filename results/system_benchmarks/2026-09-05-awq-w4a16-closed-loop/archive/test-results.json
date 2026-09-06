@@ -1,0 +1,27 @@
+{
+  "protocol": {
+    "command": [
+      "/home/ayax/.venvs/agent-infer-lab/bin/python",
+      "-m",
+      "unittest",
+      "discover",
+      "-s",
+      "/mnt/d/agent-infer-lab/scripts/awq_closed_loop",
+      "-p",
+      "test_protocol.py",
+      "-v"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": "test_exclusive_save (test_protocol.Tests.test_exclusive_save) ... ok\ntest_extract (test_protocol.Tests.test_extract) ... ok\n\n----------------------------------------------------------------------\nRan 2 tests in 0.001s\n\nOK\n"
+  },
+  "runtime_cpu": {
+    "command": [
+      "/home/ayax/.venvs/agent-infer-lab/bin/python",
+      "/mnt/d/agent-infer-lab/scripts/awq_closed_loop/runtime_cpu_checks.py"
+    ],
+    "exit_code": 0,
+    "stdout": "",
+    "stderr": ".\n----------------------------------------------------------------------\nRan 1 test in 0.019s\n\nOK\n"
+  }
+}

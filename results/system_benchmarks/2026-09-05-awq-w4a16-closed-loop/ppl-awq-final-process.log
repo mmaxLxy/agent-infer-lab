@@ -1,0 +1,65 @@
+INFO 09-05 11:58:32 [api_utils.py:273] non-default args: {'dtype': 'half', 'seed': 20260905, 'max_model_len': 2048, 'block_size': 16, 'enable_prefix_caching': False, 'gpu_memory_utilization': 0.65, 'max_num_batched_tokens': 2048, 'max_num_seqs': 16, 'disable_log_stats': True, 'quantization': 'awq_marlin', 'enforce_eager': True, 'attention_backend': 'FLASHINFER', 'logits_processors': ['awq_runtime:GoldContinuationProcessor'], 'async_scheduling': False, 'model': '/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct-AWQ/snapshots/7c05280e9583b6cace2dc9d8950e21bfd3d72c19'}
+INFO 09-05 11:58:32 [model.py:611] Resolved architecture: Qwen2ForCausalLM
+INFO 09-05 11:58:32 [model.py:1745] Using max model len 2048
+INFO 09-05 11:58:33 [awq_marlin.py:269] The model is convertible to awq_marlin during runtime. Using awq_marlin kernel.
+INFO 09-05 11:58:33 [scheduler.py:239] Chunked prefill is enabled with max_num_batched_tokens=2048.
+INFO 09-05 11:58:33 [vllm.py:999] Asynchronous scheduling is disabled.
+WARNING 09-05 11:58:33 [vllm.py:1055] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+WARNING 09-05 11:58:33 [vllm.py:1097] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+INFO 09-05 11:58:33 [kernel.py:270] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+INFO 09-05 11:58:33 [vllm.py:1273] Cudagraph is disabled under eager mode
+INFO 09-05 11:58:33 [compilation.py:321] Enabled custom fusions: norm_quant, act_quant
+WARNING 09-05 11:58:35 [system_utils.py:157] We must use the `spawn` multiprocessing start method. Overriding VLLM_WORKER_MULTIPROC_METHOD to 'spawn'. See https://docs.vllm.ai/en/latest/usage/troubleshooting.html#python-multiprocessing for more information. Reasons: WSL is detected and NVML is not compatible with fork
+(EngineCore pid=857) INFO 09-05 11:58:38 [core.py:113] Initializing a V1 LLM engine (v0.23.0) with config: model='/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct-AWQ/snapshots/7c05280e9583b6cace2dc9d8950e21bfd3d72c19', speculative_config=None, tokenizer='/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct-AWQ/snapshots/7c05280e9583b6cace2dc9d8950e21bfd3d72c19', skip_tokenizer_init=False, tokenizer_mode=auto, revision=None, tokenizer_revision=None, trust_remote_code=False, dtype=torch.float16, max_seq_len=2048, download_dir=None, load_format=auto, tensor_parallel_size=1, pipeline_parallel_size=1, data_parallel_size=1, decode_context_parallel_size=1, dcp_comm_backend=ag_rs, disable_custom_all_reduce=False, quantization=awq_marlin, quantization_config=None, enforce_eager=True, enable_return_routed_experts=False, kv_cache_dtype=auto, device_config=cuda, structured_outputs_config=StructuredOutputsConfig(backend='auto', disable_any_whitespace=False, disable_additional_properties=False, reasoning_parser='', reasoning_parser_plugin='', enable_in_reasoning=False), observability_config=ObservabilityConfig(show_hidden_metrics_for_version=None, otlp_traces_endpoint=None, collect_detailed_traces=None, kv_cache_metrics=False, kv_cache_metrics_sample=0.01, cudagraph_metrics=False, enable_layerwise_nvtx_tracing=False, enable_mfu_metrics=False, enable_mm_processor_stats=False, enable_logging_iteration_details=False), seed=20260905, served_model_name=/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct-AWQ/snapshots/7c05280e9583b6cace2dc9d8950e21bfd3d72c19, enable_prefix_caching=False, enable_chunked_prefill=True, pooler_config=None, compilation_config={'mode': <CompilationMode.NONE: 0>, 'debug_dump_path': None, 'cache_dir': '', 'compile_cache_save_format': 'binary', 'backend': 'inductor', 'custom_ops': ['all'], 'ir_enable_torch_wrap': False, 'splitting_ops': [], 'compile_mm_encoder': False, 'cudagraph_mm_encoder': False, 'encoder_cudagraph_token_budgets': [], 'encoder_cudagraph_max_vision_items_per_batch': 0, 'encoder_cudagraph_max_frames_per_batch': None, 'compile_sizes': [], 'compile_ranges_endpoints': [2048], 'inductor_compile_config': {'enable_auto_functionalized_v2': False, 'size_asserts': False, 'alignment_asserts': False, 'scalar_asserts': False, 'combo_kernels': True, 'benchmark_combo_kernel': True}, 'inductor_passes': {}, 'cudagraph_mode': <CUDAGraphMode.NONE: 0>, 'cudagraph_num_of_warmups': 0, 'cudagraph_capture_sizes': [], 'cudagraph_copy_inputs': False, 'cudagraph_specialize_lora': True, 'use_inductor_graph_partition': False, 'pass_config': {'fuse_norm_quant': True, 'fuse_act_quant': True, 'fuse_attn_quant': False, 'enable_sp': False, 'fuse_gemm_comms': False, 'fuse_allreduce_rms': False, 'fuse_rope_kvcache_cat_mla': False, 'fuse_act_padding': False}, 'max_cudagraph_capture_size': 0, 'dynamic_shapes_config': {'type': <DynamicShapesType.BACKED: 'backed'>, 'evaluate_guards': False, 'assume_32_bit_indexing': False}, 'local_cache_dir': None, 'fast_moe_cold_start': False, 'static_all_moe_layers': []}, kernel_config=KernelConfig(ir_op_priority=IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native']), enable_flashinfer_autotune=True, moe_backend='auto', linear_backend='auto')
+(EngineCore pid=857) WARNING 09-05 11:58:38 [interface.py:757] Using 'pin_memory=False' as WSL is detected. This may slow down the performance.
+(EngineCore pid=857) INFO 09-05 11:58:39 [parallel_state.py:1568] world_size=1 rank=0 local_rank=0 distributed_init_method=tcp://100.67.143.5:53717 backend=nccl
+(EngineCore pid=857) INFO 09-05 11:58:39 [parallel_state.py:1903] rank 0 in world size 1 is assigned as DP rank 0, PP rank 0, PCP rank 0, TP rank 0, EP rank N/A, EPLB rank N/A
+(EngineCore pid=857) INFO 09-05 11:58:40 [topk_topp_sampler.py:55] Using FlashInfer for top-p & top-k sampling.
+(EngineCore pid=857) INFO 09-05 11:58:40 [gpu_model_runner.py:5092] Starting to load model /home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct-AWQ/snapshots/7c05280e9583b6cace2dc9d8950e21bfd3d72c19...
+(EngineCore pid=857) INFO 09-05 11:58:40 [awq_marlin.py:437] Using MarlinLinearKernel for AWQMarlinLinearMethod
+(EngineCore pid=857) INFO 09-05 11:58:40 [cuda.py:318] Using AttentionBackendEnum.FLASHINFER backend.
+(EngineCore pid=857) INFO 09-05 11:58:40 [weight_utils.py:922] Filesystem type for checkpoints: EXT4. Checkpoint size: 0.68 GiB. Available RAM: 4.98 GiB.
+(EngineCore pid=857) INFO 09-05 11:58:40 [weight_utils.py:945] Auto-prefetch is disabled because the filesystem (EXT4) is not a recognized network FS (NFS/Lustre). If you want to force prefetching, start vLLM with --safetensors-load-strategy=prefetch.
+(EngineCore pid=857) Loading safetensors checkpoint shards:   0% Completed | 0/1 [00:00<?, ?it/s]
+(EngineCore pid=857) Loading safetensors checkpoint shards: 100% Completed | 1/1 [00:00<00:00,  4.88it/s]
+(EngineCore pid=857) Loading safetensors checkpoint shards: 100% Completed | 1/1 [00:00<00:00,  4.86it/s]
+(EngineCore pid=857) 
+(EngineCore pid=857) INFO 09-05 11:58:41 [default_loader.py:397] Loading weights took 0.21 seconds
+(EngineCore pid=857) INFO 09-05 11:58:41 [gpu_model_runner.py:5187] Model loading took 0.43 GiB memory and 0.721728 seconds
+(EngineCore pid=857) INFO 09-05 11:58:41 [marlin_utils.py:461] Marlin kernel can achieve better performance for small size_n with experimental use_atomic_add feature. You can consider set environment variable VLLM_MARLIN_USE_ATOMIC_ADD to 1 if possible.
+(EngineCore pid=857) INFO 09-05 11:58:43 [gpu_worker.py:480] Available KV cache memory: 4.67 GiB
+(EngineCore pid=857) INFO 09-05 11:58:43 [kv_cache_utils.py:1744] GPU KV cache size: 407,760 tokens
+(EngineCore pid=857) INFO 09-05 11:58:43 [kv_cache_utils.py:1745] Maximum concurrency for 2,048 tokens per request: 199.10x
+(EngineCore pid=857) INFO 09-05 11:58:43 [kernel_warmup.py:97] Warming up FlashInfer attention.
+(EngineCore pid=857) INFO 09-05 11:58:43 [jit_monitor.py:54] Kernel JIT monitor activated — Triton JIT compilations during inference will be logged as warnings.
+(EngineCore pid=857) INFO 09-05 11:58:43 [core.py:313] init engine (profile, create kv cache, warmup model) took 1.83 s
+(EngineCore pid=857) INFO 09-05 11:58:43 [vllm.py:999] Asynchronous scheduling is disabled.
+WARNING 09-05 11:58:43 [interface.py:757] Using 'pin_memory=False' as WSL is detected. This may slow down the performance.
+(EngineCore pid=857) WARNING 09-05 11:58:43 [vllm.py:1055] Enforce eager set, disabling torch.compile and CUDAGraphs. This is equivalent to setting -cc.mode=none -cc.cudagraph_mode=none
+(EngineCore pid=857) WARNING 09-05 11:58:43 [vllm.py:1097] Inductor compilation was disabled by user settings, optimizations settings that are only active during inductor compilation will be ignored.
+(EngineCore pid=857) INFO 09-05 11:58:43 [kernel.py:270] Final IR op priority after setting platform defaults: IrOpPriorityConfig(rms_norm=['vllm_c', 'native'], fused_add_rms_norm=['vllm_c', 'native'])
+(EngineCore pid=857) INFO 09-05 11:58:43 [vllm.py:1273] Cudagraph is disabled under eager mode
+(EngineCore pid=857) INFO 09-05 11:58:43 [compilation.py:321] Enabled custom fusions: norm_quant, act_quant
+(EngineCore pid=857) WARNING 09-05 11:58:43 [jit_monitor.py:103] Triton kernel JIT compilation during inference: _compute_slot_mapping_kernel. This causes a latency spike; consider extending warmup to cover this shape/config.
+RAW_LOGPROB_VALIDATION_PASS
+PPL awq 4/64
+PPL awq 8/64
+PPL awq 12/64
+PPL awq 16/64
+PPL awq 20/64
+PPL awq 24/64
+PPL awq 28/64
+PPL awq 32/64
+PPL awq 36/64
+PPL awq 40/64
+PPL awq 44/64
+PPL awq 48/64
+PPL awq 52/64
+PPL awq 56/64
+PPL awq 60/64
+PPL awq 64/64
+PPL_COMPLETE {"kind": "awq", "cases": 64, "tokens": 5470, "decode_tokens": 5406, "nll": 6166.309863610653, "decode_nll": 5441.319604440121, "conditional_ppl": 3.087297571578406, "decode_conditional_ppl": 2.7360996151581065, "raw_logprob_validation": "passed"}
+(EngineCore pid=857) INFO 09-05 11:59:08 [core.py:1178] [shutdown] EngineCore: trigger received signal=SIGTERM
+(EngineCore pid=857) INFO 09-05 11:59:08 [core.py:1297] [shutdown] EngineCore: start mode=abort timeout=0s
+(EngineCore pid=857) INFO 09-05 11:59:08 [core.py:1328] [shutdown] EngineCore: request processing complete; starting resource teardown
+(EngineCore pid=857) INFO 09-05 11:59:08 [core.py:1191] [shutdown] EngineCore: exiting busy loop

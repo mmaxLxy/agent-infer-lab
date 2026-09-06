@@ -25,6 +25,7 @@ results/*
 !results/nsight_compute/*.ncu-rep
 !results/nsight_compute/*.txt
 !results/system_benchmarks/
+results/**/server.pid
 *.safetensors
 *.pth
 *.pt

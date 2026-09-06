@@ -1,0 +1,365 @@
+{
+  "rows": [
+    {
+      "layer": "model.layers.0.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.39937499165534973
+      ],
+      "_k_scale": [
+        0.6512500047683716
+      ],
+      "_v_scale": [
+        0.0015856933314353228
+      ]
+    },
+    {
+      "layer": "model.layers.1.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.05121093615889549
+      ],
+      "_k_scale": [
+        0.7393749952316284
+      ],
+      "_v_scale": [
+        0.017949217930436134
+      ]
+    },
+    {
+      "layer": "model.layers.2.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.028749998658895493
+      ],
+      "_k_scale": [
+        0.2945312559604645
+      ],
+      "_v_scale": [
+        0.010302734561264515
+      ]
+    },
+    {
+      "layer": "model.layers.3.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.0707421824336052
+      ],
+      "_k_scale": [
+        0.09624999761581421
+      ],
+      "_v_scale": [
+        0.019697265699505806
+      ]
+    },
+    {
+      "layer": "model.layers.4.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.08117187023162842
+      ],
+      "_k_scale": [
+        0.06789062172174454
+      ],
+      "_v_scale": [
+        0.024355467408895493
+      ]
+    },
+    {
+      "layer": "model.layers.5.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.09453124552965164
+      ],
+      "_k_scale": [
+        0.04300781339406967
+      ],
+      "_v_scale": [
+        0.023125000298023224
+      ]
+    },
+    {
+      "layer": "model.layers.6.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.06964843720197678
+      ],
+      "_k_scale": [
+        0.032734375447034836
+      ],
+      "_v_scale": [
+        0.01718750037252903
+      ]
+    },
+    {
+      "layer": "model.layers.7.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.12367187440395355
+      ],
+      "_k_scale": [
+        0.028886718675494194
+      ],
+      "_v_scale": [
+        0.026601562276482582
+      ]
+    },
+    {
+      "layer": "model.layers.8.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.3206250071525574
+      ],
+      "_k_scale": [
+        1.0543749332427979
+      ],
+      "_v_scale": [
+        0.017109375447034836
+      ]
+    },
+    {
+      "layer": "model.layers.9.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.10968749970197678
+      ],
+      "_k_scale": [
+        0.039531249552965164
+      ],
+      "_v_scale": [
+        0.023378904908895493
+      ]
+    },
+    {
+      "layer": "model.layers.10.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.11445312201976776
+      ],
+      "_k_scale": [
+        0.05238281190395355
+      ],
+      "_v_scale": [
+        0.029570311307907104
+      ]
+    },
+    {
+      "layer": "model.layers.11.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.11124999821186066
+      ],
+      "_k_scale": [
+        0.036738280206918716
+      ],
+      "_v_scale": [
+        0.027402343228459358
+      ]
+    },
+    {
+      "layer": "model.layers.12.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.095703125
+      ],
+      "_k_scale": [
+        0.04839843511581421
+      ],
+      "_v_scale": [
+        0.04019531235098839
+      ]
+    },
+    {
+      "layer": "model.layers.13.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.08617187291383743
+      ],
+      "_k_scale": [
+        0.026132812723517418
+      ],
+      "_v_scale": [
+        0.02529296837747097
+      ]
+    },
+    {
+      "layer": "model.layers.14.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.0892968699336052
+      ],
+      "_k_scale": [
+        0.05640624836087227
+      ],
+      "_v_scale": [
+        0.02724609337747097
+      ]
+    },
+    {
+      "layer": "model.layers.15.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.12007812410593033
+      ],
+      "_k_scale": [
+        0.038457028567790985
+      ],
+      "_v_scale": [
+        0.022382812574505806
+      ]
+    },
+    {
+      "layer": "model.layers.16.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.10070312023162842
+      ],
+      "_k_scale": [
+        0.03408202901482582
+      ],
+      "_v_scale": [
+        0.033378906548023224
+      ]
+    },
+    {
+      "layer": "model.layers.17.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.08882812410593033
+      ],
+      "_k_scale": [
+        0.041093748062849045
+      ],
+      "_v_scale": [
+        0.03306640684604645
+      ]
+    },
+    {
+      "layer": "model.layers.18.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.11992187052965164
+      ],
+      "_k_scale": [
+        0.029238279908895493
+      ],
+      "_v_scale": [
+        0.026542969048023224
+      ]
+    },
+    {
+      "layer": "model.layers.19.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.10507812350988388
+      ],
+      "_k_scale": [
+        0.03763671964406967
+      ],
+      "_v_scale": [
+        0.023867186158895493
+      ]
+    },
+    {
+      "layer": "model.layers.20.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.05874999985098839
+      ],
+      "_k_scale": [
+        0.04144531115889549
+      ],
+      "_v_scale": [
+        0.07222656160593033
+      ]
+    },
+    {
+      "layer": "model.layers.21.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.05785156041383743
+      ],
+      "_k_scale": [
+        0.024355467408895493
+      ],
+      "_v_scale": [
+        0.09656249731779099
+      ]
+    },
+    {
+      "layer": "model.layers.22.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.03783202916383743
+      ],
+      "_k_scale": [
+        0.0311132799834013
+      ],
+      "_v_scale": [
+        0.05527343600988388
+      ]
+    },
+    {
+      "layer": "model.layers.23.self_attn.attn",
+      "calculate": false,
+      "dtype": "fp8",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        0.05453125014901161
+      ],
+      "_k_scale": [
+        0.02656249888241291
+      ],
+      "_v_scale": [
+        0.06414062529802322
+      ]
+    }
+  ],
+  "runner_calculate": true
+}

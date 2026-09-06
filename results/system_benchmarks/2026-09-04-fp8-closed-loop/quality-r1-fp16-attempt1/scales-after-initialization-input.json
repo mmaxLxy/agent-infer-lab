@@ -1,0 +1,365 @@
+{
+  "rows": [
+    {
+      "layer": "model.layers.0.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.1.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.2.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.3.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.4.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.5.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.6.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.7.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.8.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.9.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.10.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.11.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.12.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.13.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.14.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.15.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.16.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.17.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.18.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.19.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.20.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.21.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.22.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    },
+    {
+      "layer": "model.layers.23.self_attn.attn",
+      "calculate": false,
+      "dtype": "auto",
+      "backend": "FlashInferImpl",
+      "_q_scale": [
+        1.0
+      ],
+      "_k_scale": [
+        1.0
+      ],
+      "_v_scale": [
+        1.0
+      ]
+    }
+  ],
+  "runner_calculate": false
+}

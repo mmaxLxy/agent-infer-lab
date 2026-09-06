@@ -1,0 +1,28 @@
+{
+  "id": "cmpl-a194d10ef0db3bb6",
+  "object": "text_completion",
+  "created": 1788580366,
+  "model": "Qwen/Qwen2.5-0.5B-Instruct",
+  "choices": [
+    {
+      "index": 0,
+      "text": " 1000 mg every 6 hours so he takes 1000/6 = 16.67 pills per hour.\nHe will take 16.67 * 2 = 33 pills per week.\n#### 33\n\nThe price of a ticket to a amusement",
+      "logprobs": null,
+      "finish_reason": "length",
+      "stop_reason": null,
+      "token_ids": null,
+      "prompt_logprobs": null,
+      "prompt_token_ids": null,
+      "routed_experts": null
+    }
+  ],
+  "service_tier": null,
+  "system_fingerprint": "vllm-0.23.0-53c95d75",
+  "usage": {
+    "prompt_tokens": 1536,
+    "total_tokens": 1600,
+    "completion_tokens": 64,
+    "prompt_tokens_details": null
+  },
+  "kv_transfer_params": null
+}

@@ -1,0 +1,12 @@
+{
+  "kind": "fp8",
+  "cases": 4,
+  "tokens": 272,
+  "decode_tokens": 268,
+  "nll": 294.06272738392875,
+  "decode_nll": 242.19132178242728,
+  "conditional_ppl": 2.947958710589881,
+  "decode_conditional_ppl": 2.468717936595319,
+  "scale_sha256": "e24064abcabf8bd2d54ca1a54a79c492c4ee3beba73374be631471a26c18c2da",
+  "raw_logprob_validation": "passed"
+}

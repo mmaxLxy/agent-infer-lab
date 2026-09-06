@@ -1,0 +1,9 @@
+{
+  "kind": "fp8",
+  "total": 200,
+  "success": 200,
+  "strict_correct": 4,
+  "flexible_correct": 75,
+  "length_truncated": 13,
+  "scale_sha256": "e24064abcabf8bd2d54ca1a54a79c492c4ee3beba73374be631471a26c18c2da"
+}

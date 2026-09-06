@@ -1,0 +1,28 @@
+{
+  "engine": {
+    "model": "/home/ayax/.cache/huggingface/hub/models--Qwen--Qwen2.5-0.5B-Instruct/snapshots/7ae557604adf67be50417f59c2c2f167def9a775",
+    "dtype": "half",
+    "kv_cache_dtype": "fp8",
+    "calculate_kv_scales": true,
+    "attention_backend": "FLASHINFER",
+    "max_model_len": 2048,
+    "gpu_memory_utilization": 0.65,
+    "max_num_seqs": 16,
+    "max_num_batched_tokens": 2048,
+    "block_size": 16,
+    "seed": 20260903,
+    "enforce_eager": true,
+    "enable_prefix_caching": false,
+    "worker_extension_cls": "fp8_runtime.ScaleWorkerExtension",
+    "logits_processors": [
+      "fp8_runtime:GoldContinuationProcessor"
+    ],
+    "logprobs_mode": "raw_logprobs",
+    "async_scheduling": false
+  },
+  "metric": "GSM8K gold-solution conditional PPL, not standard WikiText PPL",
+  "decode_metric": "Exclude first target token (prefill prediction); remaining tokens use KV-cache decode",
+  "limit": 64,
+  "max_target_tokens": 128,
+  "note": "Synchronous scheduling is used only in this teacher-forced quality test; not a performance measurement"
+}

@@ -1,0 +1,11 @@
+{
+  "kind": "awq",
+  "cases": 64,
+  "tokens": 5470,
+  "decode_tokens": 5406,
+  "nll": 6166.309863610653,
+  "decode_nll": 5441.319604440121,
+  "conditional_ppl": 3.087297571578406,
+  "decode_conditional_ppl": 2.7360996151581065,
+  "raw_logprob_validation": "passed"
+}

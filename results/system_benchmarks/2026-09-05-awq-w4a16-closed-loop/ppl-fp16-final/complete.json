@@ -1,0 +1,11 @@
+{
+  "kind": "fp16",
+  "cases": 64,
+  "tokens": 5470,
+  "decode_tokens": 5406,
+  "nll": 5208.971722705431,
+  "decode_nll": 4549.266046149797,
+  "conditional_ppl": 2.591611861362505,
+  "decode_conditional_ppl": 2.31989436231375,
+  "raw_logprob_validation": "passed"
+}

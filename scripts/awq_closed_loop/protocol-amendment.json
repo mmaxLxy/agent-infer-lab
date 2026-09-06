@@ -1,0 +1,9 @@
+{
+  "reason": "The first compatibility smoke explicitly forced the generic AWQ backend. vLLM reported the checkpoint is convertible to AWQ-Marlin and recommended that kernel for faster inference.",
+  "excluded": "smoke-awq-attempt1 (generic awq, compatibility-only)",
+  "included_smoke": "smoke-awq-attempt2 (awq_marlin)",
+  "formal_backend": "awq_marlin",
+  "quantization_semantics": "Official AWQ W4A16 checkpoint; 4-bit weights, FP16 activations, FP16 KV cache",
+  "decision_time": "before all formal paired performance and quality runs",
+  "anti_cherry_pick": "All formal AWQ runs use the same selected backend; no backend is selected per round."
+}
